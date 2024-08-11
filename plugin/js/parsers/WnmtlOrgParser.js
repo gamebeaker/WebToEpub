@@ -9,6 +9,9 @@ class WnmtlOrgParser extends Parser{
 
     async getChapterUrls(dom, chapterUrlsUI) {
         let bookId = this.idFromUrl(dom.baseURI);
+        if (bookId == "") {
+            return;
+        }
         let tocUrl = this.makeTocUrl(bookId, 1);
         let data = (await HttpClient.fetchJson(tocUrl)).json.data;
         let chapters = this.extractPartialChapterListFromJson(data);

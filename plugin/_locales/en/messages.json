@@ -155,6 +155,10 @@
 		"message": "Test",
 		"description": "Label on button to test default parser settings"
 	},
+	"__MSG_button_test_default_parser_chapter_discovery__": {
+		"message": "Test Chapter discovery",
+		"description": "Label on button to test Chapter discovery with existing parser"
+	},
 	"__MSG_button_Unselect_All__": {
 		"message": "Unselect All",
 		"description": "Label on button to unselect all chapters"
@@ -234,6 +238,10 @@
 	"__MSG_label_Default_Parser_Test_Chapter_Url__": {
 		"message": "URL of first chapter:",
 		"description": "Label in front of input for URL to test deefault parser settings."
+	},
+	"__MSG_label_Default_Parser_Last_Test_Chapter_Url__": {
+		"message": "URL of last chapter:",
+		"description": "Label in front of input for URL for last chapter to test chapter discovery with existing parser."
 	},
 	"__MSG_label_Default_Parser_Unwanted_Elements_CSS__": {
 		"message": "CSS selector for element(s) to remove:",

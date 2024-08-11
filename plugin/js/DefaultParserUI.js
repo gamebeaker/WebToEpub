@@ -84,14 +84,68 @@ DefaultParserSiteSettings.storageName = "DefaultParserConfigs";
 /** Class that handles UI for configuring the Default Parser */
 class DefaultParserUI {
     constructor() {
+        this.orgdom = null;
+        this.userPreferences = UserPreferences.readFromLocalStorage();
     }
 
     static setupDefaultParserUI(dom, parser) {
+        this.orgdom = dom;
         DefaultParserUI.copyInstructions();
         DefaultParserUI.setDefaultParserUiVisibility(true);
         DefaultParserUI.populateDefaultParserUI(dom, parser)
         document.getElementById("testDefaultParserButton").onclick = DefaultParserUI.testDefaultParser.bind(null, parser);
         document.getElementById("finisheddefaultParserButton").onclick = DefaultParserUI.onFinishedClicked.bind(null, parser);
+        document.getElementById("testDefaultParserChapterDiscoveryButton").onclick = DefaultParserUI.testDefaultParserChapterDiscovery.bind();
+        
+    }
+
+    static resetutil(){
+        util.hyperLinkToChapter = function(link, newArc) {
+            return {
+                sourceUrl:  link.href,
+                title: link.innerText.trim(),
+                newArc: (newArc === undefined) ? null : newArc
+            };
+        }
+    }
+
+    static async testDefaultParserChapterDiscovery(){
+        let oldparser = "";
+        let chapterUrlsUI = new ChapterUrlsUI(this);
+        for (let mappair of parserFactory.parsers) {
+            let tempparserfactory = new ParserFactory();
+            DefaultParserUI.resetutil();
+            tempparserfactory.parsers = parserFactory.parsers;
+            let tempdom = DefaultParserUI.orgdom;
+            var [key, value] = mappair;
+            try {
+                let found = false;
+                let parser = tempparserfactory.fetchByUrl("https://" + key);
+                if (oldparser == parser.constructor.name) {
+                    continue;
+                }
+                oldparser = parser.constructor.name;
+                parser.userPreferences = UserPreferences.readFromLocalStorage();
+                let retvaluelist = await parser.getChapterUrls(tempdom, chapterUrlsUI);
+
+                for (let retfirstlink of retvaluelist) {
+                    if (DefaultParserUI.getTestChapterUrlInput().value == retfirstlink.sourceUrl ) {
+                        for (let retsecondlink of retvaluelist) {
+                            if (DefaultParserUI.getLastTestChapterUrlInput().value == retsecondlink.sourceUrl ) {
+                                console.log(key + " = " + parser);
+                                console.log(oldparser);
+                                console.log(retvaluelist);
+                                found = true;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            } catch (error) {
+            }
+        }
+        console.log("end");
     }
 
     static onFinishedClicked(parser) {
@@ -201,6 +255,10 @@ class DefaultParserUI {
 
     static getTestChapterUrlInput() {
         return document.getElementById("defaultParserTestChapterUrl");
+    }
+
+    static getLastTestChapterUrlInput() {
+        return document.getElementById("defaultParserLastTestChapterUrl");
     }
 
     static getResultViewElement() {
