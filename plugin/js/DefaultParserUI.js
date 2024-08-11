@@ -111,7 +111,9 @@ class DefaultParserUI {
 
     static async testDefaultParserChapterDiscovery(){
         let oldparser = "";
+        console.log(parserFactory);
         let chapterUrlsUI = new ChapterUrlsUI(this);
+        //to do check manual parser
         for (let mappair of parserFactory.parsers) {
             let tempparserfactory = new ParserFactory();
             DefaultParserUI.resetutil();
@@ -127,12 +129,11 @@ class DefaultParserUI {
                 oldparser = parser.constructor.name;
                 parser.userPreferences = UserPreferences.readFromLocalStorage();
                 let retvaluelist = await parser.getChapterUrls(tempdom, chapterUrlsUI);
-
+                //Check if first chapter and last chapter are in list
                 for (let retfirstlink of retvaluelist) {
                     if (DefaultParserUI.getTestChapterUrlInput().value == retfirstlink.sourceUrl ) {
                         for (let retsecondlink of retvaluelist) {
                             if (DefaultParserUI.getLastTestChapterUrlInput().value == retsecondlink.sourceUrl ) {
-                                console.log(key + " = " + parser);
                                 console.log(oldparser);
                                 console.log(retvaluelist);
                                 found = true;
@@ -145,7 +146,7 @@ class DefaultParserUI {
             } catch (error) {
             }
         }
-        console.log("end");
+        console.log("end of chapter discovery");
     }
 
     static onFinishedClicked(parser) {
