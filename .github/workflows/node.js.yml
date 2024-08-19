@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ ExperimentalTabMode ]
+    branches: [ add_github_actions_auto_release ]
   pull_request:
-    branches: [ ExperimentalTabMode ]
+    branches: [ add_github_actions_auto_release ]
 
 jobs:
   build:
