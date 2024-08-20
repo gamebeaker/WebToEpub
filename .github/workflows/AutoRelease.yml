@@ -75,8 +75,9 @@ jobs:
         echo To install the Addon pick the file suitable for you, >> output.txt
         echo * WebToEpub%Build%.xpi for Firefox >> output.txt
         echo * WebToEpub%Build%.zip for Chrome >> output.txt
+        echo.>> output.txt
         echo follow the [How to install from Source (for people who are not developers)](https://github.com/dteviot/WebToEpub/tree/ExperimentalTabMode#user-content-how-to-install-from-source-for-people-who-are-not-developers) instructions to install it.>> output.txt
-        echo "" >> output.txt
+        echo.>> output.txt
         echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/0.0.0.159...ExperimentalTabMode >> output.txt
 
         echo delete old developer-build release:
