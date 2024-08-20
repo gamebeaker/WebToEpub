@@ -65,6 +65,11 @@ jobs:
         
         set /p Build=<new_clean_version.txt
 
+        echo Zip release
+        cd eslint
+        tar -a -c -f WebToEpub-developer-build-%Build%.zip WebToEpub%Build%.xpi WebToEpub%Build%.zip
+        cd ..
+
         echo Create developer-build release notes.
         echo Latest developer build of WebToEpub with the latest fixes. > output.txt
         echo To install the Addon pick the file suitable for you, >> output.txt
@@ -81,7 +86,6 @@ jobs:
         gh release create developer-build -p -t "Latest developer build" --target "ExperimentalTabMode" -F output.txt
         
         echo add files to release.
-        gh release upload developer-build eslint/WebToEpub%Build%.xpi
-        gh release upload developer-build eslint/WebToEpub%Build%.zip
+        gh release upload developer-build WebToEpub-developer-build-%Build%.zip
       env:
           GH_TOKEN: ${{ github.token }}
