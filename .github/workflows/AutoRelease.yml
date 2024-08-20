@@ -46,7 +46,7 @@ jobs:
         move /y new_manifest.json plugin/manifest.json
 
         echo cleanup new_version.txt
-        jq.exe -r . new_version.txt > new_clean_version.txt
+        jq.exe -r (\"$Build=\"+.) new_version.txt > new_clean_version.ps1
         
         echo do some configuration
         git config user.name github-actions
@@ -58,20 +58,26 @@ jobs:
 
     - run: npm install
     - run: npm run lint
+
+    - name: Zip developer build
+      shell: PowerShell
+      run: |
+
         
     - name: Release latest developer build
-      shell: cmd
       run: |
         
-        set /p Build=<new_clean_version.txt
+        . .\new_clean_version.ps1
+        #set /p Build=<new_clean_version.txt
 
         echo Create developer-build release notes.
         echo Latest developer build of WebToEpub with the latest fixes. > output.txt
         echo To install the Addon pick the file suitable for you, >> output.txt
-        echo * WebToEpub%Build%.xpi for Firefox >> output.txt
-        echo * WebToEpub%Build%.zip for Chrome >> output.txt
+        echo * WebToEpub$Build.xpi for Firefox >> output.txt
+        echo * WebToEpub$Build.zip for Chrome >> output.txt
+        echo.>> output.txt
         echo follow the [How to install from Source (for people who are not developers)](https://github.com/dteviot/WebToEpub/tree/ExperimentalTabMode#user-content-how-to-install-from-source-for-people-who-are-not-developers) instructions to install it.>> output.txt
-        echo "" >> output.txt
+        echo.>> output.txt
         echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/0.0.0.159...ExperimentalTabMode >> output.txt
 
         echo delete old developer-build release:
@@ -81,8 +87,8 @@ jobs:
         gh release create developer-build -p -t "Latest developer build" --target "ExperimentalTabMode" -F output.txt
         
         echo add files to release.
-        gh release upload developer-build eslint/WebToEpub%Build%.xpi
-        gh release upload developer-build eslint/WebToEpub%Build%.zip
+        gh release upload developer-build eslint/WebToEpub$Build.xpi
+        gh release upload developer-build eslint/WebToEpub$Build.zip
       env:
           GH_TOKEN: ${{ github.token }}
         
