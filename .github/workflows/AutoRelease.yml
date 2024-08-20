@@ -49,8 +49,8 @@ jobs:
         jq.exe -r (\"Build_clean=\"+.) new_version.txt >> "$GITHUB_ENV"
         jq.exe -r (\"Build=\"+.) new_version.txt >> "$GITHUB_ENV"
         jq.exe -r . new_version.txt > new_clean_version.txt
-        echo $Build_clean
-        echo $Build
+        echo "$Build_clean"
+        echo "$Build"
         
         echo do some configuration
         git config user.name github-actions
