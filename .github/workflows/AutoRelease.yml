@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: Auto release dev build
 
 on:
   push:
@@ -22,8 +22,25 @@ jobs:
       run: |
         Get-Command "jq.exe"
         jq.exe --version
-        jq.exe .version | sub("[0-9]*$"; "") plugin/manifest.json > test.txt
-        type test.txt
+        
+        #increament last version number and save it in new_version.txt
+        jq.exe (.version^|sub(\"[0-9]?.[0-9]?.[0-9]?.\";\"\")^|tonumber+1) < plugin/manifest.json > new_version.txt
+        set /p Build=<new_version.txt
+
+        #save complete version number in new_version.txt
+        jq.exe (.version^|split(\".\")^|map(tonumber)^|(.[3]^|=%Build%)^|map(tostring)^|join(\".\")) < plugin/manifest.json > new_version.txt
+        set /p Build=<new_version.txt
+
+        #save new_manifest.json with new version number
+        jq.exe (.version^|=\"%Build%\") plugin/manifest.json > new_manifest.json
+        #move new_manifest.json to manifest.json
+        move /y new_manifest.json plugin/manifest.json
+
+        
+        # do some configuration
+        git status
+
+
 
 
     - uses: actions/checkout@v3
