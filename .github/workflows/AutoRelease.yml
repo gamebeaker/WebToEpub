@@ -26,6 +26,7 @@ jobs:
 
 
     - name: Increase Version in manifest.json
+      id: new-version
       shell: cmd
       run: |
 
@@ -46,11 +47,9 @@ jobs:
         move /y new_manifest.json plugin/manifest.json
 
         echo cleanup new_version.txt
-        jq.exe -r (\"Build_clean=\"+.) new_version.txt >> "$GITHUB_ENV"
-        jq.exe (\"Build=\"+.) new_version.txt >> "$GITHUB_ENV"
+        jq.exe -r (\"SELECTED_COLOR=\"+.) new_version.txt >> "$GITHUB_OUTPUT"
+        jq.exe (\"Build=\"+.) new_version.txt >> "$GITHUB_OUTPUT"
         jq.exe -r . new_version.txt > new_clean_version.txt
-        echo "$Build_clean"
-        echo "$Build"
         
         echo do some configuration
         git config user.name github-actions
@@ -65,7 +64,9 @@ jobs:
 
     - name: Zip developer build
       shell: PowerShell
-      run: |
+      env:
+        SELECTED_COLOR: ${{ steps.new-version.outputs.SELECTED_COLOR }}
+      run: echo "The selected color is $SELECTED_COLOR"
         
         
     - name: Release latest developer build
