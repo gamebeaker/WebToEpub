@@ -26,7 +26,6 @@ jobs:
 
 
     - name: Increase Version in manifest.json
-      id: new-version
       shell: cmd
       run: |
 
@@ -47,11 +46,7 @@ jobs:
         move /y new_manifest.json plugin/manifest.json
 
         echo cleanup new_version.txt
-        jq.exe -r (\"Build_clean=\"+.) new_version.txt >> "$GITHUB_OUTPUT"
-        jq.exe (\"Build=\"+.) new_version.txt >> "$GITHUB_OUTPUT"
         jq.exe -r . new_version.txt > new_clean_version.txt
-
-        echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
         
         echo do some configuration
         git config user.name github-actions
@@ -63,28 +58,20 @@ jobs:
 
     - run: npm install
     - run: npm run lint
-
-    - name: Zip developer build
-      shell: PowerShell
-      env:
-        SELECTED_COLOR: ${{ steps.new-version.outputs.SELECTED_COLOR }}
-      run: echo "The selected color is $SELECTED_COLOR"
-        
         
     - name: Release latest developer build
       shell: cmd
       run: |
         
-        
-        echo $Build
+        set /p Build=<new_clean_version.txt
+
         echo Create developer-build release notes.
         echo Latest developer build of WebToEpub with the latest fixes. > output.txt
         echo To install the Addon pick the file suitable for you, >> output.txt
-        echo * WebToEpub$Build.xpi for Firefox >> output.txt
+        echo * WebToEpub%Build%.xpi for Firefox >> output.txt
         echo * WebToEpub%Build%.zip for Chrome >> output.txt
-        echo.>> output.txt
         echo follow the [How to install from Source (for people who are not developers)](https://github.com/dteviot/WebToEpub/tree/ExperimentalTabMode#user-content-how-to-install-from-source-for-people-who-are-not-developers) instructions to install it.>> output.txt
-        echo.>> output.txt
+        echo "" >> output.txt
         echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/0.0.0.159...ExperimentalTabMode >> output.txt
 
         echo delete old developer-build release:
@@ -98,4 +85,3 @@ jobs:
         gh release upload developer-build eslint/WebToEpub%Build%.zip
       env:
           GH_TOKEN: ${{ github.token }}
-        
