@@ -48,7 +48,8 @@ jobs:
         
         echo do some configuration
         git status
-
+        git add plugin/manifest.json
+        git commit -m "Auto commit for Version %Build%"
 
     - run: npm install
     - run: npm run lint
