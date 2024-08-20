@@ -24,7 +24,7 @@ jobs:
 
         Get-Command "jq.exe"
         jq.exe --version
-        
+        echo %cd%
         echo increament last version number and save it in new_version.txt
         jq.exe (.version^|sub(\"[0-9]?.[0-9]?.[0-9]?.\";\"\")^|tonumber+1) < plugin/manifest.json > new_version.txt
         set /p Build=<new_version.txt
