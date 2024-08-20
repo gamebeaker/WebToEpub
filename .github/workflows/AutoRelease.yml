@@ -47,9 +47,12 @@ jobs:
 
         
         echo do some configuration
+        git config --local user.email "action@github.com"
+        git config --local user.name "gitHub-actions"
         git status
         git add plugin/manifest.json
         git commit -m "Auto commit for Version %Build%"
+        git push
 
     - run: npm install
     - run: npm run lint
