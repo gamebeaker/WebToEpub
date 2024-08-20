@@ -25,21 +25,21 @@ jobs:
         Get-Command "jq.exe"
         jq.exe --version
         
-        #increament last version number and save it in new_version.txt
+        echo increament last version number and save it in new_version.txt
         jq.exe (.version^|sub(\"[0-9]?.[0-9]?.[0-9]?.\";\"\")^|tonumber+1) < plugin/manifest.json > new_version.txt
         set /p Build=<new_version.txt
 
-        #save complete version number in new_version.txt
+        echo save complete version number in new_version.txt
         jq.exe (.version^|split(\".\")^|map(tonumber)^|(.[3]^|=%Build%)^|map(tostring)^|join(\".\")) < plugin/manifest.json > new_version.txt
         set /p Build=<new_version.txt
 
-        #save new_manifest.json with new version number
+        echo save new_manifest.json with new version number
         jq.exe (.version^|=\"%Build%\") plugin/manifest.json > new_manifest.json
-        #move new_manifest.json to manifest.json
+        echo move new_manifest.json to manifest.json
         move /y new_manifest.json plugin/manifest.json
 
         
-        # do some configuration
+        echo do some configuration
         git status
 
 
