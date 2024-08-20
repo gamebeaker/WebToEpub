@@ -18,11 +18,14 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         
     steps:
-    - name: Check jq
+    - name: Increase Version in manifest.json
       run: |
         Get-Command "jq.exe"
         jq.exe --version
-          
+        jq.exe .version | sub("[0-9]*$"; "") plugin/manifest.json > test.txt
+        type test.txt
+
+
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -30,14 +33,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run lint
-    
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        # A file, directory or wildcard pattern that describes what to upload
-        path: |
-          eslint/*.xpi
-          eslint/*.zip
         
     - name: Release latest developer build
       run: |
