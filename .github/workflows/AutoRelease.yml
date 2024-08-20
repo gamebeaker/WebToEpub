@@ -1,11 +1,11 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Auto release dev build
+name: Auto release developer-build
 
 on:
   push:
-    branches: [ add_github_actions_auto_release ] 
+    branches: [ ExperimentalTabMode ] 
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
 
-    - name: Increase Version in manifest.json
+    - name: Increase Version in manifest.json and push it
       shell: cmd
       run: |
 
@@ -51,7 +51,6 @@ jobs:
         echo do some configuration
         git config user.name github-actions
         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-        git status
         git add plugin/manifest.json
         git commit -m "Auto commit for Version %Build%"
         git push
@@ -65,7 +64,7 @@ jobs:
         
         set /p Build=<new_clean_version.txt
 
-        echo Zip release
+        echo zip release files
         cd eslint
         tar -a -c -f WebToEpub-developer-build-%Build%.zip WebToEpub%Build%.xpi WebToEpub%Build%.zip
         cd ..
