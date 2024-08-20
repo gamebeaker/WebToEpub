@@ -1,0 +1,70 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ add_github_actions_auto_release ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        
+    steps:
+    - name: Check jq
+      run: |
+        Get-Command "jq.exe"
+        jq.exe --version
+          
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - run: npm run lint
+    
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        # A file, directory or wildcard pattern that describes what to upload
+        path: |
+          eslint/*.xpi
+          eslint/*.zip
+        
+    - name: Release latest developer build
+      run: |
+        
+        # create a developer-build release notes:
+        echo "Create developer-build release notes."
+        echo "Latest developer build of WebToEpub with the latest fixes." >> output.txt
+        echo "" >> output.txt
+        echo "This release was created on **$(date +'%Y-%m-%d %H:%M')** and may contain unexpected bugs." >> output.txt
+        echo "To install the Addon pick the file suitable for you," >> output.txt
+        echo "*WebToEpubx.x.x.x.xpi for Firefox" >> output.txt
+        echo "*WebToEpubx.x.x.x.zip for Chrome" >> output.txt
+        echo "follow the [How to install from Source (for people who are not developers)](https://github.com/dteviot/WebToEpub/tree/ExperimentalTabMode#user-content-how-to-install-from-source-for-people-who-are-not-developers) instructions" >> output.txt
+        echo "" >> output.txt
+        echo "**Full Changelog**: https://github.com/dteviot/WebToEpub/compare/0.0.0.159...ExperimentalTabMode" >> output.txt
+
+        # delete old developer-build release:
+        echo "delete old developer-build release."
+        gh release delete developer-build
+
+        # create developer-build release:
+        echo "create developer-build release."
+        gh release create developer-build -p -t "Latest developer build" --target "ExperimentalTabMode" -F output.txt
+        
+        # add files to release.
+        gh release upload developer-build eslint/*.xpi
+        gh release upload developer-build eslint/*.zip
+      env:
+          GH_TOKEN: ${{ github.token }}
+        
