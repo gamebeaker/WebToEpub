@@ -72,7 +72,7 @@ jobs:
 
         echo Create developer-build release notes.
         echo Latest developer build of WebToEpub with the latest fixes. > output.txt
-        echo To install the Addon pick the file suitable for you, >> output.txt
+        echo To install the Addon pick the file suitable for you >> output.txt
         echo * WebToEpub$Build.xpi for Firefox >> output.txt
         echo * WebToEpub$Build.zip for Chrome >> output.txt
         echo.>> output.txt
