@@ -89,8 +89,9 @@ jobs:
         gh release create developer-build -p -t "Latest developer build" --target "ExperimentalTabMode" -F output.txt
         
         # add files to release.
+        set /p Build=<new_version.txt
         gh release upload developer-build eslint/WebToEpub%Build%.xpi
-        gh release upload developer-build eslint/*.zip
+        gh release upload developer-build eslint/WebToEpub%Build%.zip
       env:
           GH_TOKEN: ${{ github.token }}
         
