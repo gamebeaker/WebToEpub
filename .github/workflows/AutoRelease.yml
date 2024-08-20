@@ -4,8 +4,7 @@
 name: Auto release dev build
 
 on:
-  push:
-    branches: [ add_github_actions_auto_release ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -60,7 +59,7 @@ jobs:
         path: |
           eslint/*.xpi
           eslint/*.zip
-          
+
     - name: Release latest developer build
       run: |
         
