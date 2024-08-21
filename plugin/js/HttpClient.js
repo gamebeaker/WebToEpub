@@ -73,11 +73,20 @@ class FetchErrorHandler {
         let retryDelay = [120, 60, 30, 15];
         switch(response.status) {
         case 403:
-            alert(chrome.i18n.getMessage("warning403ErrorResponse", new URL(response.url).hostname));
+            if (confirm(chrome.i18n.getMessage("warning403ErrorResponse", new URL(response.url).hostname))) {
+                // Open site
+                window.open(new URL(response.url), "_blank").focus();
+                alert(chrome.i18n.getMessage("wait403ErrorResponse", new URL(response.url).hostname));
+            } else {
+                // Do nothing!
+            }
             return {retryDelay: [1], promptUser: true};
         case 429:
             FetchErrorHandler.show429Error(response);
             return {retryDelay: retryDelay, promptUser: true};
+        case 445:
+            //Random Unique exception thrown on Webnovel/Qidian. Not part of w3 spec.
+            return {retryDelay: retryDelay, promptUser: false};
         case 509:
             // server asked for rate limiting
             return {retryDelay: retryDelay, promptUser: true};

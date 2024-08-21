@@ -5,6 +5,7 @@ parserFactory.register("scribblehub.com", () => new ScribblehubParser());
 class ScribblehubParser extends Parser {
     constructor() {
         super();
+        this.minimumThrottle = 5000;
     }
 
     async getChapterUrls(dom, chapterUrlsUI) {
@@ -32,7 +33,7 @@ class ScribblehubParser extends Parser {
     }
 
     findContent(dom) {
-        return dom.querySelector("div#chp_raw");
+        return dom.querySelector("div.fic_row, div#chp_raw");
     };
 
     populateUI(dom) {

@@ -51,8 +51,9 @@ class ParserState {
     }
 }
 
-class Parser {
+class Parser {    
     constructor(imageCollector) {
+        this.minimumThrottle = null;
         this.state = new ParserState();
         this.imageCollector = imageCollector || new ImageCollector();
         this.userPreferences = null;
@@ -461,7 +462,7 @@ class Parser {
         that.imageCollector.reset();
         that.imageCollector.setCoverImageUrl(CoverImageUI.getCoverImageUrl());
 
-        await parserFactory.addParsersToPages(this, pagesToFetch);
+        await this.addParsersToPages(pagesToFetch);
         let index = 0;
         try
         {
@@ -476,6 +477,10 @@ class Parser {
         {
             ErrorLog.log(err);
         }
+    }
+
+    async addParsersToPages(pagesToFetch) {
+        parserFactory.addParsersToPages(this, pagesToFetch);
     }
 
     groupPagesToFetch(webPages, index) {
@@ -658,8 +663,24 @@ class Parser {
         return await this.getChaptersFromAllTocPages(chapters, extractPartialChapterList, urlsOfTocPages, chapterUrlsUI);
     }
 
+    getRateLimit()
+    {
+        if (this.userPreferences.manualDelayPerChapter.value == "simulate_reading")
+        {
+            return this.userPreferences.manualDelayPerChapter.value;
+        }
+        let manualDelayPerChapterValue = parseInt(this.userPreferences.manualDelayPerChapter.value);
+
+        if (!this.userPreferences.overrideMinimumDelay.value)
+        {
+            return Math.max(this.minimumThrottle, manualDelayPerChapterValue);
+        }
+        return manualDelayPerChapterValue;
+    }
+
     async rateLimitDelay() {
-        let manualDelayPerChapterValue = (this.userPreferences.manualDelayPerChapter.value == "simulate_reading" )? util.randomInteger(420000,900000): parseInt(this.userPreferences.manualDelayPerChapter.value);  
+        let manualDelayPerChapterValue = this.getRateLimit();
+        manualDelayPerChapterValue = (manualDelayPerChapterValue == "simulate_reading" )? util.randomInteger(420000,900000): manualDelayPerChapterValue;
         await util.sleep(manualDelayPerChapterValue);
     }
 
@@ -682,6 +703,7 @@ class Parser {
         chapterUrlsUI.showTocProgress(chapters);
         let url = nextTocPageUrl(dom, chapters, chapters);
         while (url != null) {
+            await this.rateLimitDelay();
             dom = (await HttpClient.wrapFetch(url)).responseXML;
             let partialList = chaptersFromDom(dom);
             chapterUrlsUI.showTocProgress(partialList);

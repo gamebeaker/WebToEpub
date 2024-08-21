@@ -1,5 +1,6 @@
 "use strict";
 
+//dead url/ parser
 parserFactory.register("storyseedling.com", () => new StorySeedlingParser());
 
 class StorySeedlingParser extends Parser {
@@ -8,9 +9,8 @@ class StorySeedlingParser extends Parser {
     }
 
     async getChapterUrls(dom) {
-        return [...dom.querySelectorAll(".grid.w-full a")]
-            .map(link => this.linkToChapter(link))
-            .reverse();
+        return [...dom.querySelectorAll("main .grid.w-full a")]
+            .map(link => this.linkToChapter(link));
     }
 
     linkToChapter(link) {
@@ -23,8 +23,21 @@ class StorySeedlingParser extends Parser {
 
     findContent(dom) {
         return (
-            dom.querySelector("div.mx-auto .mb-4") || dom.querySelector("#chapter-content")
+            dom.querySelector("div.prose .mb-4") || dom.querySelector("#chapter-content")
         );
+    }
+
+    populateUI(dom) {
+        super.populateUI(dom);
+        document.getElementById("removeAuthorNotesRow").hidden = false; 
+    }
+
+    preprocessRawDom(webPageDom) {
+        let notes = webPageDom.querySelector("div.prose .mb-4:nth-of-type(2)");
+        if ((notes != null) && !this.userPreferences.removeAuthorNotes.value) {
+            this.tagAuthorNotes([notes]);
+            this.findContent(webPageDom).appendChild(notes);
+        }
     }
 
     extractTitleImpl(dom) {

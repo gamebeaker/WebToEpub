@@ -1,31 +1,55 @@
 "use strict";
 
 parserFactory.register("arcanetranslations.com", () => new PandamtlParser());
+//dead url
 parserFactory.register("bookalb.com", () => new NoblemtlParser());
 parserFactory.register("ckandawrites.online", () => new KnoxtspaceParser());
 parserFactory.register("daotranslate.com", () => new NoblemtlParser());
 parserFactory.register("daotranslate.us", () => new NoblemtlParser());
+//dead url
 parserFactory.register("faloomtl.com", () => new NoblemtlParser());
+//dead url
 parserFactory.register("genesistls.com", () => new NoblemtlParser());
 parserFactory.register("hoxionia.com", () => new NoblemtlParser());
 parserFactory.register("jobnib.com", () => new PandamtlParser());
 parserFactory.register("moonlightnovel.com", () => new PandamtlParser());
 parserFactory.register("noblemtl.com", () => new NoblemtlParser());
+parserFactory.register("novelcranel.org", () => new NoblemtlParser());
+//dead url
 parserFactory.register("novelsparadise.net", () => new PandamtlParser());
+//dead url
 parserFactory.register("readfreebooksonline.org", () => new NoblemtlParser());
+//dead url
 parserFactory.register("tamagotl.com", () => new NoblemtlParser());
 parserFactory.register("taonovel.com", () => new NoblemtlParser());
 parserFactory.register("knoxt.space", () => new KnoxtspaceParser());
+//dead url
 parserFactory.register("novelsknight.com", () => new NoblemtlParser());
+//dead url
 parserFactory.register("cyborg-tl.com", () => new NoblemtlParser());
 
 parserFactory.register("pandamtl.com", () => new PandamtlParser());
 parserFactory.register("universalnovel.com", () => new NoblemtlParser());
 parserFactory.register("whitemoonlightnovels.com", () => new WhitemoonlightnovelsParser());
 
+parserFactory.registerRule(
+    (url, dom) => NoblemtlParser.isNoblemtlTheme(dom) * 0.7,
+    () => new NoblemtlParser()
+);
+
+parserFactory.registerRule(
+    (url, dom) => PandamtlParser.isPandamtlTheme(dom) * 0.7,
+    () => new PandamtlParser()
+);
+
 class NoblemtlParser extends Parser{
     constructor() {
         super();
+    }
+
+    static isNoblemtlTheme(dom) {
+        return (dom.querySelector("div.eplister a") != null) &&
+            (dom.querySelector(".thumbook") != null)
     }
 
     async getChapterUrls(dom) {
@@ -35,12 +59,20 @@ class NoblemtlParser extends Parser{
     }
 
     linkToChapter(link) {
-        let title = link.querySelector(".epl-num").textContent + " "
-            + link.querySelector(".epl-title").textContent;
+        let title = NoblemtlParser.extractChapterNum(link).trim() + " "
+            + link.querySelector(".epl-title").textContent.trim();
         return ({
             sourceUrl:  link.href,
             title: title
         });
+    }
+
+    static extractChapterNum(link) {
+        let eplnum = link.querySelector(".epl-num");
+        let chapnum = eplnum.querySelector(".chapter_num");
+        return chapnum == null
+            ? eplnum.textContent
+            : chapnum.textContent;
     }
 
     findContent(dom) {
@@ -100,6 +132,11 @@ class NoblemtlParser extends Parser{
 class PandamtlParser extends NoblemtlParser{
     constructor() {
         super();
+    }
+
+    static isPandamtlTheme(dom) {
+        return (dom.querySelector("div.eplister a") != null) &&
+            (dom.querySelector(".sertothumb") != null)
     }
 
     findCoverImageUrl(dom) {

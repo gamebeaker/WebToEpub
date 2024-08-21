@@ -4,11 +4,13 @@ parserFactory.register("allnovel.org", () => new NovelfullParser());
 parserFactory.register("allnovelbin.net", () => new NovelfullParser());
 parserFactory.register("allnovelfull.app", () => new NovelfullParser());
 parserFactory.register("allnovelfull.com", () => new NovelfullParser());
+//dead url
 parserFactory.register("allnovelfull.org", () => new NovelfullParser());
 parserFactory.register("allnovelfull.net", () => new NovelfullParser());
 parserFactory.register("allnovelnext.com", () => new NovelfullParser());
 parserFactory.register("all-novelfull.net", () => new NovelfullParser());
 parserFactory.register("boxnovelfull.com", () => new NovelfullParser());
+//dead url
 parserFactory.register("freenovelsread.com", () => new NovelfullParser());
 parserFactory.register("freewn.com", () => new NovelfullParser());
 parserFactory.register("novel-bin.com", () => new NovelHyphenBinParser());
@@ -20,35 +22,46 @@ parserFactory.register("novelactive.org", () => new NovelfullParser());
 parserFactory.register("novelbin.com", () => new NovelfullParser());
 parserFactory.register("novelbin.me", () => new NovelfullParser());
 parserFactory.register("novelbin.net", () => new NovelfullParser());
+//dead url
 parserFactory.register("novelebook.net", () => new NovelfullParser());
 parserFactory.register("novelfull.com", () => new NovelfullParser());
 parserFactory.register("novelfull.net", () => new NovelfullParser());
 parserFactory.register("novelfullbook.com", () => new NovelfullParser());
+//dead url
+parserFactory.register("novelhulk.net", () => new NovelfullParser());
 parserFactory.register("novelmax.net", () => new NovelfullParser());
 parserFactory.register("novelnext.com", () => new NovelfullParser());
+parserFactory.register("novelnext.dramanovels.io", () => new NovelfullParser());
 parserFactory.register("novelnext.net", () => new NovelfullParser());
+parserFactory.register("novelnextz.com", () => new NovelfullParser());
+//dead url
 parserFactory.register("noveltop1.org", () => new NovelfullParser());
 parserFactory.register("noveltrust.net", () => new NovelfullParser());
 parserFactory.register("novelusb.com", () => new NovelfullParser());
 parserFactory.register("novelusb.net", () => new NovelfullParser());
 parserFactory.register("novelxo.net", () => new NovelfullParser());
 parserFactory.register("readnovelfull.me", () => new NovelfullParser());
+//dead url
 parserFactory.register("thenovelbin.org", () => new NovelfullParser());
 parserFactory.register("topnovelfull.com", () => new NovelfullParser());
+parserFactory.register("zinnovel.net", () => new NovelfullParser());
 
-parserFactory.registerUrlRule(
-    url => NovelfullParser.IsNovelfullHost(url),
-    () => new NovelfullParser()
-);
+parserFactory.registerManualSelect("NovelNext", () => new NovelfullParser());
 
 class NovelfullParser extends Parser{
     constructor() {
         super();
+        this.minimumThrottle = 1000;
     }
 
-    static IsNovelfullHost(url) {
-        let host = ParserFactory.hostNameForParserSelection(url);
-        return host.endsWith(".novelcenter.net") || host.endsWith(".noveljar.org");
+    // This site uses lots of hostname aliases in the chapter URLs
+    // and changes them frequently.  Resulting in WtE not picking the
+    // correct parser for the chapters
+    // See: https://github.com/dteviot/WebToEpub/issues/1345
+    async addParsersToPages(pagesToFetch) {
+        for(let page of pagesToFetch) {
+            page.parser = this;
+        }
     }
 
     async getChapterUrls(dom, chapterUrlsUI) {
