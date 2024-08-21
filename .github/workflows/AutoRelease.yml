@@ -61,19 +61,23 @@ jobs:
         echo cleanup new_version.txt
         jq.exe -r . new_version.txt > new_clean_version.txt
         
+        echo npm install/ run
+        npm install
+        npm run lint
+
         echo commit git changes
         git add plugin/manifest.json
         git commit -m "Auto commit for Version %Build%"
         git push
+        git rev-parse --verify HEAD > commit_sha.txt
 
-    - run: npm install
-    - run: npm run lint
         
     - name: Release latest developer build
       shell: cmd
       run: |
         
         set /p Build=<new_clean_version.txt
+        set /p commit_sha=<commit_sha.txt
 
         echo zip release files
         cd eslint
@@ -88,7 +92,7 @@ jobs:
         echo.>> output.txt
         echo follow the [How to install from Source (for people who are not developers)](https://github.com/dteviot/WebToEpub/tree/ExperimentalTabMode#user-content-how-to-install-from-source-for-people-who-are-not-developers) instructions to install it.>> output.txt
         echo.>> output.txt
-        echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/0.0.0.160...ExperimentalTabMode >> output.txt
+        echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/0.0.0.160...%commit_sha% >> output.txt
 
         echo delete old developer-build release:
         gh release delete developer-build --cleanup-tag
