@@ -165,7 +165,7 @@ jobs:
           echo.>> output.txt
           echo placeholder >> output.txt
           echo.>> output.txt
-          echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/%var_old_change_log_version%...%var_commit_sha% >> output.txt
+          echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/%var_old_change_log_version%...%var_build% >> output.txt
 
           echo create developer-build release:
           gh release create %var_build% --latest -t "Release %var_build%" --target "ExperimentalTabMode" -F output.txt
@@ -182,7 +182,7 @@ jobs:
           echo.>> output.txt
           echo follow the "How to install from Source (for people who are not developers)" instructions at: https://github.com/dteviot/WebToEpub/tree/ExperimentalTabMode#user-content-how-to-install-from-source-for-people-who-are-not-developers>> output.txt
           echo.>> output.txt
-          echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/%var_old_change_log_version%...%var_commit_sha% >> output.txt
+          echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/%var_old_change_log_version%...developer-build >> output.txt
 
           echo delete old developer-build release:
           gh release delete developer-build --cleanup-tag
