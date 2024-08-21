@@ -43,7 +43,7 @@ jobs:
         git status
         git branch --show-current > git_branch.txt
         set /p var_git_branch=<git_branch.txt
-        if NOT "ExperimentalTabMode"=="%version%" (
+        if NOT "ExperimentalTabMode"=="%var_git_branch%" (
           exit 1
         )
 
