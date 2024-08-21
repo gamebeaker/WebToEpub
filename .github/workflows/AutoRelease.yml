@@ -110,7 +110,7 @@ jobs:
         git status
         git add plugin/manifest.json
         git commit -m "Auto version bump for Version %var_build%"
-        ::git push
+        git push
         git rev-parse --verify HEAD > commit_sha.txt
 
         
@@ -140,7 +140,7 @@ jobs:
         cd ..
         
         
-        if "milestonetest"=="%version%" (
+        if "milestone"=="%version%" (
           set normal_release=1
         ) else (
           if "majore" == "%version%" (
