@@ -59,7 +59,7 @@ jobs:
         set /p var_old_change_log_version=<old_change_log_version.txt
         echo save old_change_log_version with %var_old_change_log_version%
         echo $version
-        set test_var=${{ inputs.version }}
+        set test_var=${{ github.event.inputs.version }}
         echo %test_var%
         if "milestone"=="$version" (
           echo if1
