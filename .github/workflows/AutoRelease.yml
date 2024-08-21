@@ -4,7 +4,13 @@ name: Auto release developer-build
 
 on:
   push:
-    branches: [ ExperimentalTabMode ] 
+    branches: [ add_github_actions_auto_release ] 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release "v1.2.3" or "develop"'
+        required: true
+        default: 'develop'
 
 jobs:
   build:
