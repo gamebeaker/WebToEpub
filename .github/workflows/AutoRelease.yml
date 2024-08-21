@@ -10,7 +10,7 @@ on:
       version:
         description: 'Define release "milestone" "majore" "minore" or "dev"'
         required: true
-        default: 'dev'
+        default: 'milestone'
 
 jobs:
   build:
@@ -59,7 +59,7 @@ jobs:
         set /p var_old_change_log_version=<old_change_log_version.txt
         echo save old_change_log_version with %var_old_change_log_version%
 
-        if "milestonetest"=="$version" (
+        if "milestone"=="$version" (
           echo if1
           set /A var_mil+=1
           set var_maj=0
@@ -104,6 +104,8 @@ jobs:
       run: |
         echo commit git changes
         set /p var_build=<new_version.txt
+        git status
+        git checkout ExperimentalTabMode
         git status
         git add plugin/manifest.json
         git commit -m "Auto version bump for Version %var_build%"
