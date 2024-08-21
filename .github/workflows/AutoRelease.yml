@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release "v1.2.3" or "develop"'
+        description: 'Release "milestone" "majore" "minore" or "dev"'
         required: true
-        default: 'develop'
+        default: 'dev'
 
 jobs:
   build:
@@ -86,7 +86,7 @@ jobs:
         echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/0.0.0.159...ExperimentalTabMode >> output.txt
 
         echo delete old developer-build release:
-        gh release delete developer-build
+        gh release delete developer-build --cleanup-tag
 
         echo create developer-build release:
         gh release create developer-build -p -t "Latest developer build" --target "ExperimentalTabMode" -F output.txt
