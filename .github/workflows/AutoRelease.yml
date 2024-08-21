@@ -99,7 +99,7 @@ jobs:
         echo create developer-build release:
         gh release create developer-build -p -t "Latest developer build" --target "ExperimentalTabMode" -F output.txt
         
-        gh release edit developer-build --target %commit_sha%
+        gh release edit developer-build --target "%commit_sha%"
 
         echo add files to release.
         gh release upload developer-build eslint/WebToEpub-developer-build-%Build%.zip
