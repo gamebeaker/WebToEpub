@@ -128,19 +128,7 @@ jobs:
         if "0.0.0.0" == "%var_old_change_log_version%" (
           set var_old_change_log_version=0.0.0.160
         )
-
-        echo zip release files
-        cd eslint
-        tar -a -c -f WebToEpub-developer-build-%Build%.zip WebToEpub%var_build%.xpi WebToEpub%var_build%.zip
-        cd ..
-
-        echo rename release files
-        cd eslint
-        move /y WebToEpub%var_build%.xpi WebToEpub%var_build%.Firefox.zip
-        move /y WebToEpub%var_build%.zip WebToEpub%var_build%.Chrome.zip
-        cd ..
-        
-        
+     
         if "milestone"=="%version%" (
           set normal_release=1
         ) else (
@@ -154,6 +142,13 @@ jobs:
             )
           )
         )
+
+        echo rename release files
+        cd eslint
+        move /y WebToEpub%var_build%.xpi WebToEpub%var_build%.Firefox.zip
+        move /y WebToEpub%var_build%.zip WebToEpub%var_build%.Chrome.zip
+        cd ..
+
         if %normal_release% == 1 (
 
           echo Create release notes.
@@ -167,12 +162,12 @@ jobs:
           echo.>> output.txt
           echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/%var_old_change_log_version%...%var_build% >> output.txt
 
-          echo create developer-build release:
+          echo create %var_build% release:
           gh release create %var_build% --latest -t "Release %var_build%" --target "ExperimentalTabMode" -F output.txt
           
           echo add files to release.
-          gh release upload developer-build eslint/WebToEpub%var_build%.Firefox.zip
-          gh release upload developer-build eslint/WebToEpub%var_build%.Chrome.zip
+          gh release upload %var_build% eslint/WebToEpub%var_build%.Firefox.zip
+          gh release upload %var_build% eslint/WebToEpub%var_build%.Chrome.zip
         ) else (
           echo Create developer-build release notes.
           echo Latest developer build of WebToEpub with the latest fixes. > output.txt
