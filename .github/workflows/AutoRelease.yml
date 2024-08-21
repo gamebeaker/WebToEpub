@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release "milestone" "majore" "minore" or "dev"'
+        description: 'Define release "milestone" "majore" "minore" or "dev"'
         required: true
         default: 'dev'
 
