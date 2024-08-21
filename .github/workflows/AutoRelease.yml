@@ -58,7 +58,7 @@ jobs:
 
         set /p var_old_change_log_version=<old_change_log_version.txt
         echo save old_change_log_version with %var_old_change_log_version%
-
+        echo $version
         if "milestone"=="$version" (
           echo if1
           set /A var_mil+=1
