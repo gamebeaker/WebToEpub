@@ -41,11 +41,9 @@ jobs:
         git config user.name github-actions
         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
         git status
-        git checkout ExperimentalTabMode
-        git status
         git branch --show-current > git_branch.txt
         set /p var_git_branch=<git_branch.txt
-        if "ExperimentalTabMode"!="%version%" (
+        if NOT "ExperimentalTabMode"=="%version%" (
           exit 1
         )
 
@@ -65,24 +63,24 @@ jobs:
         echo save old_change_log_version with %var_old_change_log_version%
         
         if "milestone"=="%version%" (
-          echo if1
+          echo if milestone
           set /A var_mil+=1
           set var_maj=0
           set var_min=0
           set var_dev=0
         ) else (
           if "majore"=="%version%" (
-          echo if2
+            echo if majore
             set /A var_maj+=1
             set var_min=0
             set var_dev=0
           ) else (
             if "minore"=="%version%" (
-          echo if3
+              echo if minore
               set /A var_min+=1
               set var_dev=0
             ) else (
-          echo elsedev
+          	  echo else dev
               set /A var_dev+=1
             )
           )
@@ -109,8 +107,6 @@ jobs:
       run: |
         echo commit git changes
         set /p var_build=<new_version.txt
-        git status
-        git checkout ExperimentalTabMode
         git status
         git add plugin/manifest.json
         git commit -m "Auto version bump for Version %var_build%"
