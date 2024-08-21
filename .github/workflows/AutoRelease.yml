@@ -30,7 +30,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
 
-    - name: Increase Version in manifest.json and push it
+    - name: Increase Version in manifest.json
       shell: cmd
       run: |
 
@@ -65,7 +65,7 @@ jobs:
     - run: npm install
     - run: npm run lint
     
-    - name: commit git changes
+    - name: commit/ push git changes
       shell: cmd
       run: |
         echo commit git changes
