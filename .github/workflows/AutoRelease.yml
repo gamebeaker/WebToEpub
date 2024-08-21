@@ -62,9 +62,12 @@ jobs:
         jq.exe -r . new_version.txt > new_clean_version.txt
         
         echo npm install/ run
-        npm install
-        npm run lint
-
+    - run: npm install
+    - run: npm run lint
+    
+    - name: commit git changes
+      shell: cmd
+      run: |
         echo commit git changes
         git add plugin/manifest.json
         git commit -m "Auto commit for Version %Build%"
