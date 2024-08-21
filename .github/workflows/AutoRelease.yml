@@ -56,7 +56,7 @@ jobs:
         set /p var_dev=<dev_version.txt
         jq.exe -r (.version^|split(\".\")^|map(tonumber)^|(.[0]^|=%var_mil%)^|(.[1]^|=%var_maj%)^|(.[2]^|=%var_min%)^|(.[3]^|=0)^|map(tostring)^|join(\".\")) < plugin/manifest.json > old_change_log_version.txt
 
-        if [[ "milestone" == "$version" ]]; then
+        if [[ "milestonetest" == "$version" ]]; then
           jq.exe tonumber+1 < milestone_version.txt > milestone_version.txt
           echo 0 > majore_version.txt
           echo 0 > minore_version.txt
