@@ -121,9 +121,9 @@ jobs:
         set /p var_old_change_log_version=<old_change_log_version.txt
         set /p var_commit_sha=<commit_sha.txt
 
-        if [[ "0.0.0.0" == "%var_old_change_log_version%" ]]; then
+        if "0.0.0.0" == "%var_old_change_log_version%" (
           set var_old_change_log_version=0.0.0.160
-        fi
+        )
 
         echo zip release files
         cd eslint
@@ -137,7 +137,26 @@ jobs:
         cd ..
         
         
-        if [[ "milestone" == "$version" ]] || [[ "majore" == "$version" ]] || [[ "minore" == "$version" ]]; then
+        if "milestonetest"=="$version" (
+          set normal_release=1
+        )
+        else
+        (
+          if "majore" == "$version" (
+            set normal_release=1
+          )
+          else
+          (
+            if "minore" == "$version" (
+              set normal_release=1
+            )
+            else
+            (
+              set normal_release=0
+            )
+          )
+        )
+        if %normal_release% == 1 (
 
           echo Create release notes.
           echo ## What's Changed> output.txt
@@ -154,8 +173,9 @@ jobs:
           echo add files to release.
           gh release upload developer-build eslint/WebToEpub%var_build%.Firefox.zip
           gh release upload developer-build eslint/WebToEpub%var_build%.Chrome.zip
+        )
         else
-        
+        (
           echo Create developer-build release notes.
           echo Latest developer build of WebToEpub with the latest fixes. > output.txt
           echo To install the Addon pick the file suitable for you, >> output.txt
@@ -175,6 +195,6 @@ jobs:
           echo add files to release.
           gh release upload developer-build eslint/WebToEpub%var_build%.Firefox.zip
           gh release upload developer-build eslint/WebToEpub%var_build%.Chrome.zip
-        fi
+        )
       env:
           GH_TOKEN: ${{ github.token }}
