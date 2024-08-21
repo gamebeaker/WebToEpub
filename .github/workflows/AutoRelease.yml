@@ -10,7 +10,7 @@ on:
       version:
         description: 'Define release "milestone" "majore" "minore" or "dev"'
         required: true
-        default: 'milestone'
+        default: 'dev'
 
 jobs:
   build:
