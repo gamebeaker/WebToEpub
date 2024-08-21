@@ -56,6 +56,9 @@ jobs:
         set /p var_dev=<dev_version.txt
         jq.exe -r (.version^|split(\".\")^|map(tonumber)^|(.[0]^|=%var_mil%)^|(.[1]^|=%var_maj%)^|(.[2]^|=%var_min%)^|(.[3]^|=0)^|map(tostring)^|join(\".\")) < plugin/manifest.json > old_change_log_version.txt
 
+        set /p var_old_change_log_version=<old_change_log_version.txt
+        echo save old_change_log_version with %var_old_change_log_version%
+
         if "milestonetest"=="$version" (
           jq.exe tonumber+1 < milestone_version.txt > milestone_version.txt
           echo 0 > majore_version.txt
@@ -85,7 +88,7 @@ jobs:
         jq.exe (.version^|split(\".\")^|map(tonumber)^|(.[0]^|=%var_mil%)^|(.[1]^|=%var_maj%)^|(.[2]^|=%var_min%)^|(.[3]^|=%var_dev%)^|map(tostring)^|join(\".\")) < plugin/manifest.json > new_version.txt
         set /p var_build=<new_version.txt
 
-        echo save new_manifest.json with new version number
+        echo save new_manifest.json with new version number %var_build%
         jq.exe (.version^|=\"%var_build%\") plugin/manifest.json > new_manifest.json
         echo move new_manifest.json to manifest.json
         move /y new_manifest.json plugin/manifest.json
@@ -101,6 +104,7 @@ jobs:
       shell: cmd
       run: |
         echo commit git changes
+        git status
         git add plugin/manifest.json
         git commit -m "Auto version bump for Version %var_build%"
         git push
