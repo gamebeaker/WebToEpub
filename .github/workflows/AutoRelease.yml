@@ -68,13 +68,13 @@ jobs:
           set var_dev=0
         ) else (
           if "majore" == "%version%" (
-          echo if1
+          echo if2
             set /A var_maj+=1
             set var_min=0
             set var_dev=0
           ) else (
             if "minore" == "%version%" (
-          echo if1
+          echo if3
               set /A var_min+=1
               set var_dev=0
             ) else (
