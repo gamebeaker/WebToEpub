@@ -99,7 +99,7 @@ jobs:
         
         echo npm install/ run
       env:
-        version: ${{ github.event_name == 'dev' || github.event.inputs.version }}
+        version: ${{ github.event.inputs.version }}
     - run: npm install
     - run: npm run lint
     
