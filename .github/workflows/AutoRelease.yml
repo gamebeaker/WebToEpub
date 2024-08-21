@@ -61,22 +61,16 @@ jobs:
           echo 0 > majore_version.txt
           echo 0 > minore_version.txt
           echo 0 > dev_version.txt 
-        )
-        else
-        (
+        ) else (
           if "majore" == "$version" (
             jq.exe tonumber+1 < majore_version.txt > majore_version.txt
             echo 0 > minore_version.txt
             echo 0 > dev_version.txt
-          )
-          else
-          (
+          ) else (
             if "minore" == "$version" (
               jq.exe tonumber+1 < minore_version.txt > minore_version.txt
               echo 0 > dev_version.txt
-            )
-            else
-            (
+            ) else (
               jq.exe tonumber+1 < dev_version.txt > dev_version.txt
             )
           )
@@ -139,19 +133,13 @@ jobs:
         
         if "milestonetest"=="$version" (
           set normal_release=1
-        )
-        else
-        (
+        ) else (
           if "majore" == "$version" (
             set normal_release=1
-          )
-          else
-          (
+          ) else (
             if "minore" == "$version" (
               set normal_release=1
-            )
-            else
-            (
+            ) else (
               set normal_release=0
             )
           )
@@ -173,9 +161,7 @@ jobs:
           echo add files to release.
           gh release upload developer-build eslint/WebToEpub%var_build%.Firefox.zip
           gh release upload developer-build eslint/WebToEpub%var_build%.Chrome.zip
-        )
-        else
-        (
+        ) else (
           echo Create developer-build release notes.
           echo Latest developer build of WebToEpub with the latest fixes. > output.txt
           echo To install the Addon pick the file suitable for you, >> output.txt
