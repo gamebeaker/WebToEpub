@@ -60,20 +60,25 @@ jobs:
         echo save old_change_log_version with %var_old_change_log_version%
 
         if "milestonetest"=="$version" (
+          echo if1
           jq.exe tonumber+1 < milestone_version.txt > milestone_version.txt
           echo 0 > majore_version.txt
           echo 0 > minore_version.txt
           echo 0 > dev_version.txt 
         ) else (
           if "majore" == "$version" (
+          echo if1
             jq.exe tonumber+1 < majore_version.txt > majore_version.txt
             echo 0 > minore_version.txt
             echo 0 > dev_version.txt
           ) else (
             if "minore" == "$version" (
+          echo if1
               jq.exe tonumber+1 < minore_version.txt > minore_version.txt
               echo 0 > dev_version.txt
             ) else (
+          echo elsedev
+          jq.exe tonumber+1 < dev_version.txt
               jq.exe tonumber+1 < dev_version.txt > dev_version.txt
             )
           )
