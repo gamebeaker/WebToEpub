@@ -157,10 +157,12 @@ jobs:
           echo.>> output.txt
           echo ## New Contributors>> output.txt
           echo.>> output.txt
+          echo placeholder >> output.txt
+          echo.>> output.txt
           echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/%var_old_change_log_version%...%var_commit_sha% >> output.txt
 
           echo create developer-build release:
-          gh release create var_build -p -t "Release %var_build%" --target "ExperimentalTabMode" -F output.txt
+          gh release create %var_build% --latest -t "Release %var_build%" --target "ExperimentalTabMode" -F output.txt
           
           echo add files to release.
           gh release upload developer-build eslint/WebToEpub%var_build%.Firefox.zip
