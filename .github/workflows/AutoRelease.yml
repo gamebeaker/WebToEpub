@@ -61,33 +61,27 @@ jobs:
 
         if "milestonetest"=="$version" (
           echo if1
-          jq.exe tonumber+1 < milestone_version.txt > milestone_version.txt
-          echo 0 > majore_version.txt
-          echo 0 > minore_version.txt
-          echo 0 > dev_version.txt 
+          set /A var_mil+=1
+          set var_maj=0
+          set var_min=0
+          set var_dev=0
         ) else (
           if "majore" == "$version" (
           echo if1
-            jq.exe tonumber+1 < majore_version.txt > majore_version.txt
-            echo 0 > minore_version.txt
-            echo 0 > dev_version.txt
+            set /A var_maj+=1
+            set var_min=0
+            set var_dev=0
           ) else (
             if "minore" == "$version" (
           echo if1
-              jq.exe tonumber+1 < minore_version.txt > minore_version.txt
-              echo 0 > dev_version.txt
+              set /A var_min+=1
+              set var_dev=0
             ) else (
           echo elsedev
-          jq.exe tonumber+1 < dev_version.txt
-              jq.exe tonumber+1 < dev_version.txt > dev_version.txt
+              set /A var_dev+=1
             )
           )
         )
-
-        set /p var_mil=<milestone_version.txt
-        set /p var_maj=<majore_version.txt
-        set /p var_min=<minore_version.txt
-        set /p var_dev=<dev_version.txt
 
         echo save complete version number in new_version.txt
         jq.exe (.version^|split(\".\")^|map(tonumber)^|(.[0]^|=%var_mil%)^|(.[1]^|=%var_maj%)^|(.[2]^|=%var_min%)^|(.[3]^|=%var_dev%)^|map(tostring)^|join(\".\")) < plugin/manifest.json > new_version.txt
@@ -177,7 +171,7 @@ jobs:
           echo * WebToEpub%Build%.Firefox.zip for Firefox >> output.txt
           echo * WebToEpub%Build%.Chrome.zip for Chrome >> output.txt
           echo.>> output.txt
-          echo follow the [How to install from Source (for people who are not developers)](https://github.com/dteviot/WebToEpub/tree/ExperimentalTabMode#user-content-how-to-install-from-source-for-people-who-are-not-developers) instructions to install it.>> output.txt
+          echo follow the [How to install from Source \(for people who are not developers\)](https://github.com/dteviot/WebToEpub/tree/ExperimentalTabMode#user-content-how-to-install-from-source-for-people-who-are-not-developers) instructions to install it.>> output.txt
           echo.>> output.txt
           echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/%var_old_change_log_version%...%var_commit_sha% >> output.txt
 
