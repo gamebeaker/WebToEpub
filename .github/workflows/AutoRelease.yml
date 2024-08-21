@@ -66,6 +66,8 @@ jobs:
         git commit -m "Auto commit for Version %Build%"
         git push
 
+        git rev-parse HEAD > commit_sha.txt
+
     - run: npm install
     - run: npm run lint
         
@@ -74,6 +76,7 @@ jobs:
       run: |
         
         set /p Build=<new_clean_version.txt
+        set /p commit_sha=<commit_sha.txt
 
         echo zip release files
         cd eslint
@@ -96,7 +99,7 @@ jobs:
         echo create developer-build release:
         gh release create developer-build -p -t "Latest developer build" --target "ExperimentalTabMode" -F output.txt
         
-        gh release edit developer-build --target "ExperimentalTabMode"
+        gh release edit developer-build --target %commit_sha%
 
         echo add files to release.
         gh release upload developer-build eslint/WebToEpub-developer-build-%Build%.zip
