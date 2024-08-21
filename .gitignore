@@ -5,3 +5,5 @@ eslint/index.csv
 node_modules
 plugin/**/*.*
 !plugin/jszip/dist/jszip.min.js
+iframe/*
+.gitignore

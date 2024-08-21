@@ -5,6 +5,12 @@ name: Auto release developer-build
 on:
   push:
     branches: [ ExperimentalTabMode ] 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release "v1.2.3" or "develop"'
+        required: true
+        default: 'develop'
 
 jobs:
   build:
