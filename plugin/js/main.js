@@ -21,7 +21,7 @@ var main = (function () {
     let initalWebPage = null;
     let parser = null;
     let userPreferences = null;
-    let library = new Library; 
+        let library = new Library; 
 
     // register listener that is invoked when script injected into HTML sends its results
     function addMessageListener() {
