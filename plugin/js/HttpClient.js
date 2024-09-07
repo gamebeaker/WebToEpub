@@ -73,7 +73,13 @@ class FetchErrorHandler {
         let retryDelay = [120, 60, 30, 15];
         switch(response.status) {
         case 403:
-            alert(chrome.i18n.getMessage("warning403ErrorResponse", new URL(response.url).hostname));
+            if (confirm(chrome.i18n.getMessage("warning403ErrorResponse", new URL(response.url).hostname))) {
+                // Open site
+                window.open(new URL(response.url), "_blank").focus();
+                alert(chrome.i18n.getMessage("wait403ErrorResponse", new URL(response.url).hostname));
+            } else {
+                // Do nothing!
+            }
             return {retryDelay: [1], promptUser: true};
         case 429:
             FetchErrorHandler.show429Error(response);
@@ -201,27 +207,35 @@ class HttpClient {
     }
 
     static async setPartitionCookies(url) {
-        if (!util.isFirefox()) {
-            // get partitionKey in the form of https://<site name>.<tld>
-            let parsedUrl = new URL(url);
-            let topLevelSite = parsedUrl.protocol + "//" + parsedUrl.hostname;
+        // get partitionKey in the form of https://<site name>.<tld>
+        let parsedUrl = new URL(url);
+        //keep old code for reference in case it changes again
+        //let topLevelSite = parsedUrl.protocol + "//" + parsedUrl.hostname;
 
-            try {
-                //  get all cookie from the site which use the partitionKey (e.g. cloudflare)
-                let cookies = await chrome.cookies.getAll({partitionKey: {topLevelSite: topLevelSite}});
-
-                //create new cookies for the site without the partitionKey
-                //cookies without the partitionKey get sent with fetch
-                cookies.forEach(element => chrome.cookies.set({
-                    domain: element.domain,
-                    url: "https://"+element.domain.substring(1),
-                    name: element.name, 
-                    value: element.value
-                }));
-            } catch {
-                // Probably running browser that doesn't support partitionKey, e.g. Kiwi
-            } 
-        }
+        try {
+            //  get all cookie from the site which use the partitionKey (e.g. cloudflare)
+            //keep old code for reference in case it changes again
+            //let cookies = await chrome.cookies.getAll({partitionKey: {topLevelSite: topLevelSite}});
+            
+            //set domain to the highest level from the website as all subdomains are included #1447 #1445
+            let urlparts = parsedUrl.hostname.split(".");
+            let cookies = "";
+            if (!util.isFirefox()) {
+                cookies = await chrome.cookies.getAll({domain: urlparts[urlparts.length-2]+"."+urlparts[urlparts.length-1],partitionKey: {}});
+            }else{
+                cookies = await browser.cookies.getAll({domain: urlparts[urlparts.length-2]+"."+urlparts[urlparts.length-1],partitionKey: {}});
+            }
+            //create new cookies for the site without the partitionKey
+            //cookies without the partitionKey get sent with fetch
+            cookies.forEach(element => chrome.cookies.set({
+                domain: element.domain,
+                url: "https://"+element.domain.substring(1),
+                name: element.name, 
+                value: element.value
+            }));
+        } catch {
+            // Probably running browser that doesn't support partitionKey, e.g. Kiwi
+        } 
     }
 }
 

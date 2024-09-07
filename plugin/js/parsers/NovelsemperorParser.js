@@ -1,6 +1,7 @@
 "use strict";
 
 parserFactory.register("novelsemperor.com", () => new NovelsemperorParser());
+parserFactory.register("novelsemperor.net", () => new NovelsemperorParser());
 
 class NovelsemperorParser extends Parser{
     constructor() {
@@ -34,7 +35,8 @@ class NovelsemperorParser extends Parser{
         }
         return [...pagination.querySelectorAll("li.pagination-link")]?.pop()
             ?.getAttribute("onclick")
-            ?.split("'")?.[1];
+            ?.split("'")?.[1]
+            ?.replace("//", "https://");
     }
 
     findContent(dom) {

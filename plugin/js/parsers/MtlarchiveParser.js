@@ -1,10 +1,12 @@
 "use strict";
 
 parserFactory.register("mtlarchive.com", () => new MtlarchiveParser());
+parserFactory.register("fictionzone.net", () => new MtlarchiveParser());
 
 class MtlarchiveParser extends Parser{
     constructor() {
         super();
+        this.minimumThrottle = 3000;
     }
 
     async getChapterUrls(dom, chapterUrlsUI) {
