@@ -151,6 +151,10 @@
 		"message": "Pack EPUB",
 		"description": "Label on button to create the EPUB"
 	},
+	"__MSG_button_Add_to_Library__": {
+		"message": "Add to Library",
+		"description": "Label on button to create the EPUB"
+	},
 	"__MSG_button_Reset__": {
 		"message": "Reset",
 		"description": "Label on button that clears the dialog"
