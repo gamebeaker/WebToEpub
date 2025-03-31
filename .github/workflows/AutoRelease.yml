@@ -159,6 +159,7 @@ jobs:
           echo ## New Contributors>> output.txt
           echo.>> output.txt
           echo placeholder >> output.txt
+          echo Download WebToEpub from your addons store >> output.txt
           echo.>> output.txt
           echo **Full Changelog**: https://github.com/dteviot/WebToEpub/compare/%var_old_change_log_version%...%var_build% >> output.txt
 
