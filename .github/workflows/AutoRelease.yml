@@ -152,7 +152,10 @@ jobs:
         if %normal_release% == 1 (
 
           echo Create release notes.
-          echo Download WebToEpub from your addons store: > output.txt
+          echo ## What's Changed> output.txt
+          echo.>> output.txt
+          echo placeholder >> output.txt
+          echo Download WebToEpub from your addons store: >> output.txt
           echo [chrome](https://chromewebstore.google.com/detail/akiljllkbielkidmammnifcnibaigelm) >> output.txt
           echo [firefox](https://addons.mozilla.org/en-US/firefox/addon/webtoepub-for-baka-tsuki/) >> output.txt
           
