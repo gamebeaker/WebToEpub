@@ -28,7 +28,7 @@ class DaoDivineTlParser extends Parser{
                 pageCount = Chapterjsons.pageCount;
             }
         }
-        return chapters;
+        return chapters.reverse();
     }
 
     chaptersFromJson(json){
