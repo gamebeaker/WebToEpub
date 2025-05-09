@@ -40,10 +40,20 @@ var main = (function () {
         if (setParser(url, dom)) {
             try {
                 userPreferences.addObserver(parser);
+            } catch (error) {
+                ErrorLog.showErrorMessage(error);
+                return;
+            }
+            try {
+                await parser.loadEpubMetaInfo(dom);
                 let metaInfo = parser.getEpubMetaInfo(dom, userPreferences.useFullTitle.value);
                 populateMetaInfo(metaInfo);
                 setUiToDefaultState();
                 parser.populateUI(dom);
+            } catch (error) {
+                ErrorLog.showErrorMessage(error);
+            }
+            try {
                 await parser.onLoadFirstPage(url, dom);
             } catch (error) {
                 ErrorLog.showErrorMessage(error);
@@ -127,14 +137,6 @@ var main = (function () {
             setUiFieldToValue("descriptionInput", "");
         }
         let metaInfo = metaInfoFromControls();
-        let fileName = EpubPacker.addExtensionIfMissing(metaInfo.fileName);
-
-        if (Download.isFileNameIllegalOnWindows(fileName)) {
-            ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorIllegalFileName",
-                [fileName, Download.illegalWindowsFileNameChars]
-            ));
-            return;
-        }
 
         if ("yes" == libclick.dataset.libclick) {
             if (document.getElementById("chaptersPageInChapterListCheckbox").checked) {
@@ -160,6 +162,7 @@ var main = (function () {
             document.getElementById("LibAddToLibrary").disabled = false;
             let overwriteExisting = userPreferences.overwriteExistingEpub.value;
             let backgroundDownload = userPreferences.noDownloadPopup.value;
+            let fileName = Download.CustomFilename();
             if ("yes" == libclick.dataset.libclick) {
                 return library.LibAddToLibrary(content, fileName, document.getElementById("startingUrlInput").value, overwriteExisting, backgroundDownload);
             }
@@ -176,11 +179,7 @@ var main = (function () {
             window.workInProgress = false;
             main.getPackEpubButton().disabled = false;
             document.getElementById("LibAddToLibrary").disabled = false;
-            if (libclick.dataset.libsuppressErrorLog == true) {
-                return;
-            } else {
-                ErrorLog.showErrorMessage(err);
-            }
+            ErrorLog.showErrorMessage(err);
         });
     }
 
@@ -293,8 +292,15 @@ var main = (function () {
     function onAdvancedOptionsClick() {
         let section =  getAdvancedOptionsSection();
         section.hidden = !section.hidden;
+        section = getAdditionalMetadataSection();
+        section.hidden = !userPreferences.ShowMoreMetadataOptions.value;
         section =  getLibrarySection();
         section.hidden = true;
+    }
+
+    function onShowMoreMetadataOptionsClick(){
+        let section = getAdditionalMetadataSection();
+        section.hidden = !section.hidden;
     }
 
     function onLibraryClick(){
@@ -342,7 +348,6 @@ var main = (function () {
 
     async function onLoadAndAnalyseButtonClick() {
         // load page via XmlHTTPRequest
-        let obj = this;
         let url = getValueFromUiField("startingUrlInput");
         getLoadAndAnalyseButton().disabled = true;
         return HttpClient.wrapFetch(url).then(async function (xhr) {
@@ -350,14 +355,7 @@ var main = (function () {
             getLoadAndAnalyseButton().disabled = false;
         }).catch(function (error) {
             getLoadAndAnalyseButton().disabled = false;
-            if (obj?.dataset?.libsuppressErrorLog == true) {
-                //If the Story URL has a problem 404 etc. the Chapters have to be cleared
-                //or they will be redownloaded and merged in the wrong EPUB
-                let chapterUrlsUI = new ChapterUrlsUI();
-                chapterUrlsUI.populateChapterUrlsTable([]);
-            } else {
-                ErrorLog.showErrorMessage(error);
-            }
+            ErrorLog.showErrorMessage(error);
         });
     }
 
@@ -421,6 +419,10 @@ var main = (function () {
         return document.getElementById("manuallySelectParserTag");
     }
 
+    function getAdditionalMetadataSection() {
+        return document.getElementById("AdditionalMetadatatable");
+    }
+
     function getAdvancedOptionsSection() {
         return document.getElementById("advancedOptionsSection");
     }
@@ -431,6 +433,10 @@ var main = (function () {
 
     function onSeriesPageHelp() {
         chrome.tabs.create({ url: "https://github.com/dteviot/WebToEpub/wiki/FAQ#using-baka-tsuki-series-page-parser" });
+    }
+
+    function onCustomFilenameHelp() {
+        chrome.tabs.create({ url: "https://github.com/dteviot/WebToEpub/wiki/Advanced-Options#custom-filename" });
     }
 
     function onDefaultParserHelp() {
@@ -445,6 +451,27 @@ var main = (function () {
         let url = parser.state.chapterListUrl;
         let checked = UserPreferences.getReadingListCheckbox().checked;
         userPreferences.readingList.onReadingListCheckboxClicked(checked, url);
+    }
+
+    function sbFiltersShow()
+    {
+        sbShow();
+        ChapterUrlsUI.Filters.init();
+        document.getElementById("sbFilters").hidden = false;
+        
+        let filtersForm = document.getElementById("sbFiltersForm");
+        util.removeElements(filtersForm.children);
+        filtersForm.appendChild(ChapterUrlsUI.Filters.generateFiltersTable());
+        ChapterUrlsUI.Filters.Filter(); //Run reset filters to clear confusion.
+    }
+
+    function sbShow() {
+        document.getElementById("sbOptions").classList.add("sidebarOpen");
+    }
+
+    function sbHide() {
+        document.getElementById("sbOptions").classList.remove("sidebarOpen");
+        document.getElementById("sbFilters").hidden = true;
     }
 
     function showReadingList() {
@@ -483,12 +510,14 @@ var main = (function () {
         getManuallySelectParserTag().onchange = populateControls;
         document.getElementById("advancedOptionsButton").onclick = onAdvancedOptionsClick;
         document.getElementById("hiddenBibButton").onclick = onLibraryClick;
+        document.getElementById("ShowMoreMetadataOptionsCheckbox").addEventListener("change", function(){onShowMoreMetadataOptionsClick()});
         document.getElementById("LibShowAdvancedOptionsCheckbox").addEventListener("change", function(){Library.LibRenderSavedEpubs()});
         document.getElementById("LibAddToLibrary").addEventListener("click", fetchContentAndPackEpub);
         document.getElementById("stylesheetToDefaultButton").onclick = onStylesheetToDefaultClick;
         document.getElementById("resetButton").onclick = resetUI;
         document.getElementById("clearCoverImageUrlButton").onclick = clearCoverUrl;
         document.getElementById("seriesPageHelpButton").onclick = onSeriesPageHelp;
+        document.getElementById("CustomFilenameHelpButton").onclick = onCustomFilenameHelp;
         document.getElementById("defaultParserHelpButton").onclick = onDefaultParserHelp;
         getLoadAndAnalyseButton().onclick = onLoadAndAnalyseButtonClick;
         document.getElementById("loadMetadataButton").onclick = onLoadMetadataButtonClick;
@@ -496,6 +525,8 @@ var main = (function () {
         document.getElementById("writeOptionsButton").onclick = () => userPreferences.writeToFile();
         document.getElementById("readOptionsInput").onchange = onReadOptionsFromFile;
         UserPreferences.getReadingListCheckbox().onclick = onReadingListCheckboxClicked;
+        document.getElementById("viewFiltersButton").onclick = () => sbFiltersShow();
+        document.getElementById("sbClose").onclick = () => sbHide();
         document.getElementById("viewReadingListButton").onclick = () => showReadingList();
         window.addEventListener("beforeunload", onUnloadEvent);
     }
@@ -506,7 +537,7 @@ var main = (function () {
         getPackEpubButton().disabled = true;
         document.getElementById("LibAddToLibrary").disabled = true;
         let titelname = getValueFromUiField("titleInput");
-        let url ="https://www.novelupdates.com/?s="+titelname;
+        let url ="https://www.novelupdates.com/series-finder/?sf=1&sh="+titelname;
         if (getValueFromUiField("subjectInput")==null){
             autosearchnovelupdates(url, titelname);
         }   
@@ -523,16 +554,6 @@ var main = (function () {
         });
     }
 
-    function autosearchwlnupdates(url, titelname){
-        url ="https://www.wlnupdates.com/search?title="+titelname;
-        return HttpClient.wrapFetch(url).then(function (xhr) {
-            findwlnupdatesurl(url, xhr.responseXML, titelname);
-        }).catch(function (error) {
-            getLoadAndAnalyseButton().disabled = false;
-            ErrorLog.showErrorMessage(error);
-        });
-    }
-
     function findnovelupdatesurl(url, dom, titelname){
         try{    
             let searchurl = [...dom.querySelectorAll("a")].filter(a => a.textContent==titelname)[0];
@@ -542,23 +563,8 @@ var main = (function () {
                 onLoadMetadataButtonClick();
             }
         }catch{
-            autosearchwlnupdates(url, titelname);
+            //
         }
-    }
-
-    function findwlnupdatesurl(url, dom, titelname){
-        try{    
-            let searchurl = [...dom.querySelectorAll("a")].filter(a => a.textContent==titelname)[0];
-            setUiFieldToValue("metadataUrlInput", searchurl.href);
-            url = getValueFromUiField("metadataUrlInput");
-            if (url.includes("wlnupdates.com") == true){
-                onLoadMetadataButtonClick();
-            }
-        }catch{
-            let test = "Error: Failed to auto fetch additional Metadata on novelupdates.com or wlnupdates.";
-            ErrorLog.showErrorMessage(test);}
-        getPackEpubButton().disabled = false;
-        document.getElementById("LibAddToLibrary").disabled = false;
     }
 	
     function onLoadMetadataButtonClick(){
@@ -594,9 +600,11 @@ var main = (function () {
     // actions to do when window opened
     window.onload = function () {
         userPreferences = UserPreferences.readFromLocalStorage();
-        if (isRunningInTabMode()) {
+        if (isRunningInTabMode()) { 
+            ErrorLog.SuppressErrorLog =  false;
             localizeHtmlPage();
             getAdvancedOptionsSection().hidden = !userPreferences.advancedOptionsVisibleByDefault.value;
+            getAdditionalMetadataSection().hidden = !userPreferences.ShowMoreMetadataOptions.value;
             addEventHandlers();
             populateControls();
             if (util.isFirefox()) {

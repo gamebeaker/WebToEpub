@@ -5,6 +5,12 @@ class ChapterUrlsUI {
     constructor(parser) {
         this.parser = parser;
         ChapterUrlsUI.getPleaseWaitMessageRow().hidden = false;
+        if (this.parser)
+        {
+            document.getElementById("spanParserName").textContent = this.parser.constructor.name;
+            document.getElementById("spanDelayMs").textContent = `${this.parser.getRateLimit()} ms`;
+        }
+        document.getElementById("sbFiltersForm").onsubmit = function(event) { event.preventDefault(); };
     }
 
     connectButtonHandlers() {
@@ -15,7 +21,6 @@ class ChapterUrlsUI {
         document.getElementById("copyUrlsToClipboardButton").onclick = this.copyUrlsToClipboard.bind(this);
         document.getElementById("showChapterUrlsCheckbox").onclick = this.toggleShowUrlsForChapterRanges.bind(this);
         ChapterUrlsUI.modifyApplyChangesButtons(button => button.onclick = this.setTableMode.bind(this));
-        ChapterUrlsUI.getChapterUrlsTable().onmousedown = ChapterUrlsUI.onMouseDown;
     }
 
     populateChapterUrlsTable(chapters) {
@@ -114,14 +119,11 @@ class ChapterUrlsUI {
     static onRangeChanged() {
         let startIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeStartChapterSelect());
         let endIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeEndChapterSelect());
-        let rowInRange = function(row) {
-            let index = row.rowIndex;
-            return (startIndex <= index) && (index <= endIndex);
-        }
+        let rc = new ChapterUrlsUI.RangeCalculator();
 
         for(let row of ChapterUrlsUI.getTableRowsWithChapters()) {
-            let inRange = rowInRange(row);
-            ChapterUrlsUI.setRowCheckboxState(row, rowInRange(row));
+            let inRange = rc.rowInRange(row);
+            ChapterUrlsUI.setRowCheckboxState(row, rc.rowInRange(row));
             row.hidden = !inRange;
         }
         ChapterUrlsUI.setChapterCount(startIndex, endIndex);
@@ -217,7 +219,23 @@ class ChapterUrlsUI {
             chapter.isIncludeable = true;
         }
         checkbox.checked = chapter.isIncludeable;
-        checkbox.onclick = function() { chapter.isIncludeable = checkbox.checked; };
+        checkbox.onclick = function(event) { 
+            chapter.isIncludeable = checkbox.checked; 
+            if (event == undefined || event == null) {
+                return;
+            }
+            ChapterUrlsUI.tellUserAboutShiftClick(event, row);
+            if (checkbox !== null)
+            {
+                let oldState = checkbox.checked;
+                if (event.shiftKey && (ChapterUrlsUI.lastSelectedRow !== null)) {
+                    let newState = oldState;
+                    ChapterUrlsUI.updateRange(ChapterUrlsUI.lastSelectedRow, row.rowIndex, newState);
+                } else {
+                    ChapterUrlsUI.lastSelectedRow = row.rowIndex;
+                }
+            }
+        };
         col.appendChild(checkbox);
         ChapterUrlsUI.addImageToCheckBoxColumn(col);
         row.appendChild(col);
@@ -400,26 +418,6 @@ class ChapterUrlsUI {
     }
 
     /** @private */
-    static onMouseDown(event) {
-        let row = ChapterUrlsUI.getTargetRow(event.target);
-        if (row === null) {
-            return;
-        }
-        ChapterUrlsUI.tellUserAboutShiftClick(event, row);
-        let checkbox = row.querySelector("input[type='checkbox']");
-        if (checkbox !== null)
-        {
-            let oldState = checkbox.checked;
-            if (event.shiftKey && (ChapterUrlsUI.lastSelectedRow !== null)) {
-                let newState = !oldState;
-                ChapterUrlsUI.updateRange(ChapterUrlsUI.lastSelectedRow, row.rowIndex, newState);
-            } else {
-                ChapterUrlsUI.lastSelectedRow = row.rowIndex;
-            }
-        }
-    }
-
-    /** @private */
     static updateRange(startRowIndex, endRowIndex, state) {
         let direction = startRowIndex < endRowIndex ? 1 : -1;
         let linkTable = ChapterUrlsUI.getChapterUrlsTable();
@@ -455,7 +453,207 @@ class ChapterUrlsUI {
             alert(chrome.i18n.getMessage("__MSG_Shift_Click__"));
         }
     }
+
+    static Filters = {
+        filterTermsFrequency: {},
+        chapterList: {},
+        init() {
+            let rc = new ChapterUrlsUI.RangeCalculator();
+            var filterTermsFrequency = {};
+            let constantTerms = false; // To become a collection of all terms used in every link.
+            var chapterList = ChapterUrlsUI.getTableRowsWithChapters().filter(item => rc.rowInRange(item)).map(item => {
+                let filterObj = 
+                { 
+                    row: item, 
+                    values: Array.from(item.querySelectorAll("td")).map(item => item.innerText).join("/").split("/"),
+                    valueString: ""
+                };
+                filterObj.values.push(item.querySelector("input[type='text']").value);
+                filterObj.values = filterObj.values.filter(item => item.length > 3 && !item.startsWith("http"));
+                filterObj.valueString = filterObj.values.join(" ");
+                
+                let recordFilterTerms = filterObj.valueString.toLowerCase().split(" ");
+                recordFilterTerms.forEach(item => {
+                    filterTermsFrequency[item] = (parseInt(filterTermsFrequency[item]) || 0) + 1;
+                });
+
+                if (!constantTerms)
+                {
+                    constantTerms = recordFilterTerms;
+                }
+                else
+                {
+                    constantTerms.filter(item => recordFilterTerms.indexOf(item) == -1).forEach(item =>{
+                        constantTerms.splice(constantTerms.indexOf(item), 1);
+                    });
+                }
+
+                return filterObj;
+            });
+            let minFilterTermCount = Math.min( 3, chapterList.length * 0.10 );
+            filterTermsFrequency = Object.keys(filterTermsFrequency)
+                .filter(key => constantTerms.indexOf(key) == -1 && filterTermsFrequency[key] > minFilterTermCount)
+                .map(key => ({ key: key, value: filterTermsFrequency[key] } ));
+
+            var calcValue = function (filterTerm) {
+                return filterTerm.value * filterTerm.key.length;
+            };
+
+            this.filterTermsFrequency = filterTermsFrequency.sort((a, b) => {
+                var hasHigherValue = calcValue(a) < calcValue(b);
+                var hasEqualValue = calcValue(a) == calcValue(b);
+                return hasHigherValue ? 1 : hasEqualValue ? 0 : -1;
+            });
+            this.chapterList = chapterList;
+        },
+        Filter() {
+            let rc = new ChapterUrlsUI.RangeCalculator();
+            let formResults = Object.fromEntries(new FormData(document.getElementById("sbFiltersForm")));
+            let formKeys = Object.keys(formResults);
+            formResults = formKeys.filter(key => key.indexOf("Hidden") == -1)
+                .map(key => {
+                    return {
+                        key: key,
+                        searchType: formResults[key],
+                        value: formResults[`${key}Hidden`]
+                    };
+                });
+
+            let includeChaps = null;
+            let excludeChaps = null;
+            if (formResults.filter(item => item.searchType == 1).length > 0)
+            {
+                includeChaps = new RegExp(formResults.filter(item => item.searchType == 1).map(item => item.value).join("|"), "i");
+            }
+            if (formResults.filter(item => item.searchType == -1).length > 0)
+            {
+                excludeChaps = new RegExp(formResults.filter(item => item.searchType == -1).map(item => item.value).join("|"), "i");
+            }
+
+            ChapterUrlsUI.Filters.chapterList.forEach(item =>{
+                let showChapter = rc.rowInRange(item.row);
+                if (includeChaps)
+                {
+                    showChapter = showChapter && includeChaps.test(item.valueString);
+                }
+                if (excludeChaps)
+                {
+                    showChapter = showChapter && !excludeChaps.test(item.valueString);
+                }
+                ChapterUrlsUI.setRowCheckboxState(item.row, showChapter);
+                item.row.hidden = !showChapter;
+            });
+            document.getElementById("spanChapterCount").textContent = ChapterUrlsUI.Filters.chapterList.filter(item => !item.row.hidden).length;
+        },
+        generateFiltersTable() {
+            let retVal = document.createElement("table");
+
+            let onClickEvent = function(event) {
+                if (event == undefined || event == null) {
+                    return;
+                }
+
+                if (event.target.classList.contains("exclude"))
+                {
+                    event.target.checked = false;
+                    event.target.classList.remove("exclude");
+                    event.target.value = 1;
+                }
+                else if (!event.target.indeterminate && !event.target.checked)
+                {
+                    event.target.value = -1;
+                    event.target.checked = true;
+                    event.target.indeterminate = true;
+                    event.target.classList.add("exclude");
+                }
+
+                ChapterUrlsUI.Filters.Filter();
+            };
+
+            let row = document.createElement("tr");
+            let col = document.createElement("td");
+            let checkboxId = "chkFilterText";
+            let el = document.createElement("input");
+            el.type = "checkbox";
+            el.name = checkboxId;
+            el.id = checkboxId;
+            el.value = 1;
+            el.onclick = onClickEvent;
+            el.onchange = function(event){
+                if (event == undefined || event == null) {
+                    return;
+                }
+                event.target.parentElement.nextElementSibling.firstChild.disabled = !event.target.checked;
+                ChapterUrlsUI.Filters.Filter();
+            }
+            col.appendChild(el);
+            row.appendChild(col);
+            col = document.createElement("td");
+            el = document.createElement("input");
+            el.type = "text";
+            el.disabled = true;
+            el.id = checkboxId + "Text";
+            el.onchange = function(event) { event.target.nextElementSibling.value = event.target.value; ChapterUrlsUI.Filters.Filter(); };
+            col.appendChild(el);
+            el = document.createElement("input");
+            el.type = "hidden";
+            el.id = checkboxId + "Hidden";
+            el.name = checkboxId + "Hidden";
+            col.appendChild(el);
+            row.appendChild(col);
+
+            retVal.appendChild(row);
+
+            ChapterUrlsUI.Filters.filterTermsFrequency.forEach((value, id) => {
+                row = document.createElement("tr");
+                col = document.createElement("td");
+                col.setAttribute("width", "10px");
+                
+                checkboxId = "chkFilter" + id;
+                let el = document.createElement("input");
+                el.type = "checkbox";
+                el.name = checkboxId;
+                el.id = checkboxId;
+                el.value = 1;
+                el.onclick = onClickEvent;
+                col.appendChild(el);
+                
+                el = document.createElement("input");
+                el.type = "hidden";
+                el.name = checkboxId+"Hidden";
+                el.value = value.key;
+                col.appendChild(el);
+                row.appendChild(col);
+
+                col = document.createElement("td");
+                el = document.createElement("label");
+                el.innerText = value.key;
+                el.id = checkboxId + "Label";
+                el.setAttribute("for", checkboxId);
+                el.setAttribute("width", "100%");
+                col.appendChild(el);
+                row.appendChild(col);
+
+                retVal.appendChild(row);
+            });
+            retVal.setAttribute("width", "100%");
+            return retVal;
+        }
+    }
 }
+ChapterUrlsUI.RangeCalculator = class {
+    constructor()
+    {
+        this.startIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeStartChapterSelect());
+        this.endIndex = ChapterUrlsUI.selectionToRowIndex(ChapterUrlsUI.getRangeEndChapterSelect());
+    }
+    rowInRange(row) {
+        let index = row.rowIndex;
+        return (this.startIndex <= index) && (index <= this.endIndex);
+    }
+}
+
+
 
 ChapterUrlsUI.DOWNLOAD_STATE_NONE = 0;
 ChapterUrlsUI.DOWNLOAD_STATE_DOWNLOADING = 1;

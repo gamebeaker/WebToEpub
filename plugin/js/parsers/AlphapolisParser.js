@@ -3,6 +3,7 @@ parserFactory.register("alphapolis.co.jp", () => new AlphapolisParser());
 class AlphapolisParser extends Parser{
     constructor() {
         super();
+        this.minimumThrottle = 15000;
     }
     async getChapterUrls(dom) {
         let menu = dom.querySelector("div.episodes");

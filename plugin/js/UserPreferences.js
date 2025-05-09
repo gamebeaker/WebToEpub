@@ -85,6 +85,7 @@ class UserPreferences {
         this.addPreference("higestResolutionImages", "higestResolutionImagesCheckboxInput", true);
         this.addPreference("unSuperScriptAlternateTranslations", "unSuperScriptCheckboxInput", false);
         this.addPreference("styleSheet", "stylesheetInput", EpubMetaInfo.getDefaultStyleSheet());
+        this.addPreference("CustomFilename", "CustomFilenameInput", "%Filename%");
         this.addPreference("useSvgForImages", "useSvgForImagesInput", true);
         this.addPreference("advancedOptionsVisibleByDefault", "advancedOptionsVisibleByDefaultCheckbox", false);
         this.addPreference("noDownloadPopup", "noDownloadPopupCheckbox", false);
@@ -93,8 +94,10 @@ class UserPreferences {
         this.addPreference("chaptersPageInChapterList", "chaptersPageInChapterListCheckbox", false);
         this.addPreference("autoSelectBTSeriesPage", "autoParserSelectIncludesBTSeriesPageCheckbox", false);
         this.addPreference("removeAuthorNotes", "removeAuthorNotesCheckbox", false);
+        this.addPreference("removeChapterNumber", "removeChapterNumberCheckbox", false);
         this.addPreference("removeOriginal", "removeOriginalCheckbox", true);
-        this.addPreference("maxPagesToFetchSimultaneously", "maxPagesToFetchSimultaneouslyTag", "1");
+        this.addPreference("selectTranslationGoogle", "selectTranslationGoogleCheckbox", true);
+        this.addPreference("removeTranslated", "removeTranslatedCheckbox", false);
         this.addPreference("skipChaptersThatFailFetch", "skipChaptersThatFailFetchCheckbox", false);
         this.addPreference("maxChaptersPerEpub", "maxChaptersPerEpubTag", "10,000");
         this.addPreference("manualDelayPerChapter", "manualDelayPerChapterTag", "0");
@@ -107,7 +110,9 @@ class UserPreferences {
         this.addPreference("lesstags", "lesstagsCheckbox", true);
         this.addPreference("autosearchmetadata", "autosearchmetadataCheckbox", false);
         this.addPreference("noAdditionalMetadata", "noAdditionalMetadataCheckbox", true);
+        this.addPreference("ShowMoreMetadataOptions", "ShowMoreMetadataOptionsCheckbox", false);
         this.addPreference("LibShowAdvancedOptions", "LibShowAdvancedOptionsCheckbox", false);
+        this.addPreference("LibShowCompactView", "LibShowCompactViewCheckbox", false);
         this.addPreference("LibDownloadEpubAfterUpdate", "LibDownloadEpubAfterUpdateCheckbox", false);
         this.observers = [];
         this.readingList = new ReadingList();

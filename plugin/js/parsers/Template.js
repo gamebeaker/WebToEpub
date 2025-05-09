@@ -37,13 +37,6 @@ class TemplateParser extends Parser{
         */
     }
 
-    //overwrite Max web pages to fetch simultaneously mostly used on sites that block multiple requests
-    /*
-    clampSimultanousFetchSize() {
-        return 1;
-    }
-    */
-
     // returns promise with the URLs of the chapters to fetch
     // promise is used because may need to fetch the list of URLs from internet
     /*
@@ -112,6 +105,17 @@ class TemplateParser extends Parser{
     /*
     extractLanguage(dom) {
         return dom.querySelector("html").getAttribute("lang");
+    }
+    */
+
+    // load EpubMetaInfo async in local variable to retieve with all other Metadata functions
+    // Optional, will default to "return"
+    /*
+    async loadEpubMetaInfo(){
+        let data = (await HttpClient.fetchJson(api)).json;
+        this.subject = data.subject;
+        ...
+        return;
     }
     */
 

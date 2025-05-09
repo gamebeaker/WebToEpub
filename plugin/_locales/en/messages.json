@@ -11,6 +11,10 @@
 		"message": "Show Advanced Library Options",
 		"description": "Label for checkbox to Show Advanced Library Options"
 	},
+	"__MSG_label_Lib_Compact_View__": {
+		"message": "Show Library in Compact Layout",
+		"description": "Label for checkbox to Show Advanced Library Options"
+	},
 	"__MSG_label_Lib_Download_Epub_After_Update__": {
 		"message": "Download Epubs after new Chapter got added automatically.",
 		"description": "Label for checkbox to Download Epubs after update"
@@ -35,6 +39,10 @@
 		"message": "Upload Epub",
 		"description": "Label on button to Upload Epub in Library"
 	},
+	"__MSG_button_Lib_Template_Add_List_To_Library__": {
+		"message": "Add novels to Library",
+		"description": "Label on button to Add novels to Library in Library"
+	},
 	"__MSG_button_Lib_Template_Update_All__": {
 		"message": "Update all",
 		"description": "Label on button to Update all Epubs"
@@ -46,6 +54,10 @@
 	"__MSG_button_Lib_Template_Search_new_Chapters__": {
 		"message": "Search new Chapters",
 		"description": "Label on button to Search new Chapters"
+	},
+	"__MSG_button_Lib_Template_Update_new_Chapters__": {
+		"message": "Update",
+		"description": "Label on button to Update new Chapters"
 	},
 	"__MSG_button_Lib_Template_Download_EPUB__": {
 		"message": "Download EPUB",
@@ -183,6 +195,10 @@
 		"message": "Unselect All",
 		"description": "Label on button to unselect all chapters"
 	},
+	"__MSG_button_View_Filters__": {
+		"message": "Filters",
+		"description": "Label on button and header to show available filters"
+	},
 	"__MSG_button_View_Reading_List__": {
 		"message": "View Reading List",
 		"description": "Label on button to show Reading List"
@@ -300,16 +316,20 @@
 		"description": "No tags and description in metadata"
 	},
 	"__MSG_label_auto_search_metadata__": {
-		"message": "auto search Metadata on novelupdates or wlnupdates (long loading time)",
-		"description": "auto search Metadata on novelupdates or wlnupdates"
+		"message": "auto search Metadata on novelupdates (long loading time)",
+		"description": "auto search Metadata on novelupdates"
 	},
 	"__MSG_label_less_tags__": {
 		"message": "less tags",
 		"description": "Only extract genre"
 	},
+	"__MSG_label_Show_More_Metadata_Options__": {
+		"message": "Show more Metadata options",
+		"description": "Show more Metadata options to user"
+	},
 	"__MSG_label_Manual_Delay_Per_Chapter__": {
-		"message": "Manual Throttle|Delay per chapter",
-		"description": "Manual Throttle|Delay per chapter"
+		"message": "Delay per chapter in ms",
+		"description": "Delay per chapter in ms"
 	},
 	"__MSG_label_Manually_Select_Parser__": {
 		"message": "Manually Select Parser:",
@@ -326,6 +346,10 @@
 	"__MSG_label_Metadata_description__": {
 		"message": "Epub description",
 		"description": "Preview description from the epub in Calibre"
+	},
+	"__MSG_label_Custom_Filename__": {
+		"message": "Custom Filename",
+		"description": "Custom Filename input"
 	},
 	"__MSG_label_Metadata_subject__": {
 		"message": "Tags",
@@ -367,9 +391,21 @@
 		"message": "Remove Author Notes",
 		"description": "Label for checkbox to remove Author Notes from chapters"
 	},
+	"__MSG_label_Remove_Chapter_Number__": {
+		"message": "Remove Chapter Numbers",
+		"description": "Label for checkbox to remove Chapter Numbers from chapter titles"
+	},
 	"__MSG_label_Remove_Original__": {
 		"message": "Remove Original/Raw Text",
 		"description": "Label for checkbox to remove Original text from chapters"
+	},
+	"__MSG_label_Select_Translation_Google__": {
+		"message": "Use Google translation (if unchecked it uses ai and you need to login)",
+		"description": "Label for radio checkbox Google"
+	},
+	"__MSG_label_Remove_Translated__": {
+		"message": "Remove Translated Text",
+		"description": "Label for checkbox to remove Translated text from chapters"
 	},
 	"__MSG_label_Remove_Duplicate_Images__": {
 		"message": "Remove Duplicate Images:",

@@ -29,7 +29,7 @@ class FetchErrorHandler {
     }
 
     onResponseError(url, wrapOptions, response) {
-        let failError = new Error(this.makeFailMessage(url, response.status));
+        let failError = new Error(this.makeFailMessage(response.url, response.status));
         let retry = FetchErrorHandler.getAutomaticRetryBehaviourForStatus(response);
         if (retry.retryDelay.length === 0) {
             return Promise.reject(failError);
@@ -61,7 +61,7 @@ class FetchErrorHandler {
         let cancelLabel = this.getCancelButtonText();
         return new Promise(function(resolve, reject) {
             if (wrapOptions.retry.HTTP === 403) {
-                msg.openurl = url;
+                msg.openurl = response.url;
                 msg.blockurl = url;
             }
             msg.retryAction = () => resolve(HttpClient.wrapFetchImpl(url, wrapOptions));
@@ -102,6 +102,12 @@ class FetchErrorHandler {
         case 522:
             // intermittant fault
             return {retryDelay: retryDelay, promptUser: true};
+        case 524:
+            // claudflare random error
+            return {retryDelay: [1], promptUser: true};
+        case 999:
+            // custom WebToEpub error (some api's fail and a few seconds later it is a success)
+            return {retryDelay: response.retryDelay, promptUser: false};
         default:
             // it's dead Jim
             return {retryDelay: [], promptUser: false};
@@ -165,9 +171,12 @@ class HttpClient {
     }
 
     static fetchJson(url, fetchOptions) {
+        let parser = fetchOptions?.parser;
+        delete fetchOptions?.parser;
         let wrapOptions = {
             responseHandler: new FetchJsonResponseHandler(),
-            fetchOptions: fetchOptions
+            fetchOptions: fetchOptions,
+            parser: parser
         };
         return HttpClient.wrapFetchImpl(url, wrapOptions);
     }
@@ -194,7 +203,12 @@ class HttpClient {
         try
         {
             let response = await fetch(url, wrapOptions.fetchOptions);
-            return HttpClient.checkResponseAndGetData(url, wrapOptions, response)
+            let ret = await HttpClient.checkResponseAndGetData(url, wrapOptions, response);
+            if (wrapOptions.parser?.isCustomError(ret)) {
+                let CustomErrorResponse = wrapOptions.parser.setCustomErrorResponse(url, wrapOptions, ret);
+                return wrapOptions.errorHandler.onResponseError(CustomErrorResponse.url, CustomErrorResponse.wrapOptions, CustomErrorResponse.response);
+            }
+            return ret;
         }
         catch (error)
         {
@@ -210,6 +224,25 @@ class HttpClient {
             handler.setResponse(response);
             return handler.extractContentFromResponse(response);
         }
+    }
+
+    static async setDeclarativeNetRequestRules(RulesArray){
+        let url = chrome.runtime.getURL("").split("/").filter(a => a != "");
+        let id = url[url.length - 1];
+        for (let i = 0; i < RulesArray.length; i++) {
+            //limit rule to only webtoepub domain to prevent potiential security problems
+            RulesArray[i].condition.initiatorDomains = [id];
+        }
+        let oldRules = await chrome.declarativeNetRequest.getSessionRules();
+        //In firefox i had declarativeNetRequest.getSessionRules() fail with undefined
+        if (oldRules == null) {
+            oldRules = [];
+        }
+        let oldRuleIds = oldRules.map(rule => rule.id);
+        await chrome.declarativeNetRequest.updateSessionRules({
+            removeRuleIds: oldRuleIds,
+            addRules: RulesArray
+        });
     }
 
     static async setPartitionCookies(url) {

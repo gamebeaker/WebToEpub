@@ -8,8 +8,9 @@
   "devDependencies": {
     "@xmldom/xmldom": "^0.7.5",
     "copyfiles": "^2.4.1",
-    "eslint": "^7.32.0",
-    "http-server": "^13.0.2"
+    "eslint": "^8.0.0",
+    "http-server": "^13.0.2",
+    "web-ext": "*"
   },
   "main": "popup.html",
   "directories": {
@@ -20,6 +21,7 @@
     "postinstall": "copyfiles -V -u 1 node_modules/@zip.js/zip.js/dist/zip-no-worker.min.js plugin",
     "test": "http-server -o unitTest/Tests.html",
     "lint": "cd eslint && node pack.js && eslint packed.js",
+    "web-ext": "cd eslint && cp *.xpi temp.xpi && web-ext lint -s temp.xpi && rm temp.xpi",
     "build": "cd eslint && node pack.js",
     "release": "node eslint/release.js"
   },
@@ -34,6 +36,7 @@
   },
   "contributors" : [
     { "name": "Alen Toma"},
+    { "name": "Anartigone"},
     { "name": "Asif Mahmood"},
     { "name": "Aurimas Niekis"},
     { "name": "Markus Vieth"},
@@ -75,7 +78,9 @@
     { "name": "Jemeni11"},
     { "name": "maforn"},
     { "name": "phazei"},
-    { "name": "rizkiv1"}
+    { "name": "rizkiv1"},
+    { "name": "pavan3999"},
+    { "name": "crybx"}
   ],
   "license": "GPL-3.0-only",
   "bugs": {
