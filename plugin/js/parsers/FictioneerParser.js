@@ -8,7 +8,7 @@ parserFactory.register("igniforge.com", function() { return new FictioneerParser
 parserFactory.register("razentl.com", function() { return new FictioneerParser(); });
 //these still exist
 parserFactory.register("emberlib731.xyz", function() { return new FictioneerParser(); });
-parserFactory.register("lilyonthevalley.com", function() { return new FictioneerParser(); });
+parserFactory.register("lilyonthevalley.com", function() { return new LilyOnTheValleyParser(); });
 parserFactory.register("novelib.com", function() { return new FictioneerParser(); });
 parserFactory.register("springofromance.com", function() { return new FictioneerParser(); });
 
@@ -30,15 +30,15 @@ class FictioneerParser extends Parser {
     async getChapterUrls(dom) {
         let chapters = [];
         // Put free chapters first
-        [...dom.querySelectorAll("._publish a")].map(a => chapters.push(({
+        [...dom.querySelectorAll(".chapter-group__list ._publish a")].map(a => chapters.push(({
             sourceUrl: a.href,
-            title: a.textContent,
+            title: a.textContent?.trim(),
             isIncludeable: true
         })));
         // Put scheduled chapters after free and don't select them
         [...dom.querySelectorAll("._future a")].map(a => chapters.push(({
             sourceUrl: a.href,
-            title: a.textContent,
+            title: a.textContent?.trim(),
             isIncludeable: false
         })));
 
@@ -112,11 +112,35 @@ class FictioneerParser extends Parser {
     }
 
     removeUnwantedElementsFromContentElement(element) {
-        util.removeElements(element.querySelectorAll("iframe, .eoc-chapter-groups, .chapter-nav"));
+        util.removeElements(element.querySelectorAll("iframe, .eoc-chapter-groups, .chapter-nav, .related-stories-block"));
         super.removeUnwantedElementsFromContentElement(element);
     }
 
     getInformationEpubItemChildNodes(dom) {
         return [...dom.querySelectorAll(".story__header, .story__summary")];
+    }
+}
+
+class LilyOnTheValleyParser extends FictioneerParser {
+    constructor() {
+        super();
+    }
+
+    customRawDomToContentStep(chapter, content) {
+        content.querySelectorAll("*").forEach(element => {
+            // if it's a p tag and does not have attribute data-paragraph-id, remove it
+            if (element.tagName === "P" && !element.hasAttribute("data-paragraph-id")) {
+                element.remove();
+            }
+
+            // if it's a span, and it's content is only hexadecimal: `<span class="[^"]*">[a-f0-9]+</span>`
+            if (element.tagName === "SPAN"
+                && element.classList?.length === 1
+                && /^[a-f0-9]+$/.test(element.textContent)) {
+                element.remove();
+            }
+        });
+
+        super.customRawDomToContentStep(chapter, content);
     }
 }
