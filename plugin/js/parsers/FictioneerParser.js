@@ -11,6 +11,7 @@ parserFactory.register("emberlib731.xyz", function() { return new FictioneerPars
 parserFactory.register("lilyonthevalley.com", function() { return new LilyOnTheValleyParser(); });
 parserFactory.register("novelib.com", function() { return new FictioneerParser(); });
 parserFactory.register("springofromance.com", function() { return new FictioneerParser(); });
+parserFactory.register("smeraldogarden.com", () => new FictioneerParser());
 
 parserFactory.registerRule(
     (url, dom) => FictioneerParser.isFictioneerTheme(dom) * 0.7,
