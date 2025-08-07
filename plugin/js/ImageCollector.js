@@ -6,7 +6,7 @@
 
 /** class that handles image tags 
  * urlIndex - track URLs associated with an ImageInfo
- * bitmapIndex - hashes of the image bitmaps, to allow us to elminate duplicate images
+ * bitmapIndex - hashes of the image bitmaps, to allow us to eliminate duplicate images
  * imagesToFetch - images that need to be fetched from internet
  * imagesToPack - images to pack into epub
 */
@@ -493,11 +493,11 @@ class ImageCollector {
     }
 
     /**
-    *  Derived classess will override
+    *  Derived classes will override
     *  Base version tells user there's a problem
     */
     selectImageUrlFromImagePage(dom) {
-        // try mediawkiki format
+        // try MediaWiki format
         let div = dom.querySelector("div.fullMedia");
         if (div !== null) {
             let link = div.querySelector("a");
@@ -561,7 +561,7 @@ class VariableSizeImageCollector extends ImageCollector { // eslint-disable-line
 
     onUserPreferencesUpdate(userPreferences) {
         super.onUserPreferencesUpdate(userPreferences);
-        if (userPreferences.higestResolutionImages.value) {
+        if (userPreferences.highestResolutionImages.value) {
             this.initialUrlToTry = (imageInfo) => imageInfo.wrappingUrl;
         } else {
             this.initialUrlToTry = (imageInfo) => imageInfo.sourceUrl;

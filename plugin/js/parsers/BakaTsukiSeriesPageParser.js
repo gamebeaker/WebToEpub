@@ -56,7 +56,7 @@ class BakaTsukiSeriesPageParser extends Parser {
     }
 
     populateUIImpl() {
-        document.getElementById("higestResolutionImagesRow").hidden = false; 
+        document.getElementById("highestResolutionImagesRow").hidden = false;
         document.getElementById("unSuperScriptAlternateTranslations").hidden = false; 
         document.getElementById("translatorRow").hidden = false;
         document.getElementById("fileAuthorAsRow").hidden = false;

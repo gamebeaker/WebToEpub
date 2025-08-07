@@ -1,5 +1,5 @@
 /*
-  parses imgur gallaries
+  parses imgur galleries
 */
 "use strict";
 

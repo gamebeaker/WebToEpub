@@ -128,7 +128,7 @@ class DefaultParserUI { // eslint-disable-line no-unused-vars
 
     static setDefaultParserUiVisibility(isVisible) {
         // toggle mode
-        ChapterUrlsUI.setVisibileUI(!isVisible);
+        ChapterUrlsUI.setVisibleUI(!isVisible);
         if (isVisible) {
             ChapterUrlsUI.getEditChaptersUrlsInput().hidden = true;
             ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = true);

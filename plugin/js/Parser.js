@@ -368,8 +368,8 @@ class Parser {
     }
 
     makeSaveAsFileNameWithoutExtension(title, useFullTitle) {
-        let maxFiileNameLength = useFullTitle ? 512 : 20;
-        let fileName = (title == null)  ? "web" : util.safeForFileName(title, maxFiileNameLength);
+        let maxFileNameLength = useFullTitle ? 512 : 20;
+        let fileName = (title == null)  ? "web" : util.safeForFileName(title, maxFileNameLength);
         if (util.isStringWhiteSpace(fileName)) {
             // title is probably not English, so just use it as is
             fileName = title;
@@ -548,7 +548,7 @@ class Parser {
                 await Promise.all(group.map(async (webPage) => this.fetchWebPageContent(webPage)));
                 index += group.length;
                 group = this.groupPagesToFetch(pagesToFetch, index);
-                if (util.sleepControler.signal.aborted) {
+                if (util.sleepController.signal.aborted) {
                     break;
                 }
             }
@@ -608,7 +608,7 @@ class Parser {
 
     /**
     * default implementation
-    * derivied classes override if need to do something to fetched DOM before
+    * derived classes override if need to do something to fetched DOM before
     * normal processing steps
     */
     preprocessRawDom(webPageDom) { // eslint-disable-line no-unused-vars

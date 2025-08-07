@@ -87,7 +87,7 @@ class UserPreferences { // eslint-disable-line no-unused-vars
         // (autocomplete, type inference, no unresolved variable warnings)
         this.removeDuplicateImages = this.addPreference("removeDuplicateImages", "removeDuplicateImages", false);
         this.includeImageSourceUrl = this.addPreference("includeImageSourceUrl", "includeImageSourceUrlCheckboxInput", true);
-        this.higestResolutionImages = this.addPreference("higestResolutionImages", "higestResolutionImagesCheckboxInput", true);
+        this.highestResolutionImages = this.addPreference("highestResolutionImages", "highestResolutionImagesCheckboxInput", true);
         this.unSuperScriptAlternateTranslations = this.addPreference("unSuperScriptAlternateTranslations", "unSuperScriptCheckboxInput", false);
         this.styleSheet = this.addPreference("styleSheet", "stylesheetInput", EpubMetaInfo.getDefaultStyleSheet());
         this.CustomFilename = this.addPreference("CustomFilename", "CustomFilenameInput", "%Filename%");
@@ -223,7 +223,7 @@ class UserPreferences { // eslint-disable-line no-unused-vars
             event.target.value = null;
             try {
                 let json = JSON.parse(content);
-                this.loadOpionsFromJson(json);
+                this.loadOptionsFromJson(json);
                 this.loadDefaultParserFromJson(json);
                 this.loadReadingListFromJson(json);
                 populateControls();
@@ -234,7 +234,7 @@ class UserPreferences { // eslint-disable-line no-unused-vars
         reader.readAsText(file);
     }
 
-    loadOpionsFromJson(json) {
+    loadOptionsFromJson(json) {
         for (let p of this.preferences) {
             let val = json[p.storageName];
             if (val !== undefined && (p.value !== val)) {

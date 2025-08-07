@@ -8,15 +8,15 @@
 "use strict";
 
 const util = (function() {
-    var sleepControler = new AbortController;
+    var sleepController = new AbortController;
     
     function sleep(ms) {
         return new Promise(resolve => {
             function finished() {
                 resolve();
-                sleepControler.signal.removeEventListener("abort", finished);
+                sleepController.signal.removeEventListener("abort", finished);
             }
-            sleepControler.signal.addEventListener("abort", finished);
+            sleepController.signal.addEventListener("abort", finished);
             setTimeout(finished, ms);
         });
     }
@@ -638,10 +638,10 @@ const util = (function() {
     function normalizeUrlForCompare(url) {
         let noTrailingSlash = removeTrailingSlash(removeAnchor(url));
 
-        const protocolSeperator = "://";
-        let protocolIndex = noTrailingSlash.indexOf(protocolSeperator);
+        const protocolSeparator = "://";
+        let protocolIndex = noTrailingSlash.indexOf(protocolSeparator);
         return (protocolIndex < 0) ? noTrailingSlash
-            : noTrailingSlash.substring(protocolIndex + protocolSeperator.length);
+            : noTrailingSlash.substring(protocolIndex + protocolSeparator.length);
     }
 
     function hyperLinkToChapter(link, newArc) {
@@ -1141,7 +1141,7 @@ const util = (function() {
         BLOCK_ELEMENTS: BLOCK_ELEMENTS,
         HEADER_TAGS: HEADER_TAGS,
         sleep: sleep,
-        sleepControler: sleepControler,
+        sleepController: sleepController,
         randomInteger: randomInteger,
         isFirefox: isFirefox,
         extensionVersion: extensionVersion,
