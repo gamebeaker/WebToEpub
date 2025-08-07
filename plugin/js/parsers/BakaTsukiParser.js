@@ -5,7 +5,7 @@
 
 parserFactory.registerManualSelect(
     "Baka-Tsuki Full Text Page", 
-    function() { return new BakaTsukiParser(new BakaTsukiImageCollector()); }
+    () => new BakaTsukiParser(new BakaTsukiImageCollector())
 );
 
 class BakaTsukiImageCollector extends ImageCollector {
@@ -43,9 +43,7 @@ class BakaTsukiParser extends Parser {
     }
 
     static register() {
-        parserFactory.reregister("baka-tsuki.org", function() { 
-            return new BakaTsukiParser(new BakaTsukiImageCollector());
-        });      
+        parserFactory.reregister("baka-tsuki.org", () => new BakaTsukiParser(new BakaTsukiImageCollector()));      
     }
 
     rebuildImagesToFetch() {

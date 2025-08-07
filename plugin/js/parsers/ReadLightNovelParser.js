@@ -3,12 +3,12 @@
 */
 "use strict";
 
-parserFactory.register("readlightnovel.me", function() { return new ReadLightNovelParser(); });
-parserFactory.register("readlightnovel.meme", function() { return new ReadLightNovelParser(); });
+parserFactory.register("readlightnovel.me", () => new ReadLightNovelParser());
+parserFactory.register("readlightnovel.meme", () => new ReadLightNovelParser());
 //dead url
-parserFactory.register("readlightnovel.org", function() { return new ReadLightNovelParser(); });
+parserFactory.register("readlightnovel.org", () => new ReadLightNovelParser());
 //dead url
-parserFactory.register("readlightnovel.today", function() { return new ReadLightNovelParser(); });
+parserFactory.register("readlightnovel.today", () => new ReadLightNovelParser());
 
 class ReadLightNovelParser extends Parser {
     constructor() {

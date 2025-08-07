@@ -1,7 +1,7 @@
 "use strict";
 
 //dead url/ parser
-parserFactory.register("kobatochan.com", function() { return new KobatochanParser(); });
+parserFactory.register("kobatochan.com", () => new KobatochanParser());
 
 class KobatochanParser extends WordpressBaseParser {
     constructor() {

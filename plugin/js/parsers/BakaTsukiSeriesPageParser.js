@@ -6,7 +6,7 @@
 
 parserFactory.registerManualSelect(
     "Baka-Tsuki Series Page", 
-    function() { return new BakaTsukiSeriesPageParser(); }
+    () => new BakaTsukiSeriesPageParser()
 );
 
 class BakaTsukiSeriesPageParser extends Parser {

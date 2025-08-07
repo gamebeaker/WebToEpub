@@ -4,7 +4,7 @@
 "use strict";
 
 //dead url/ parser
-parserFactory.register("fanfiction.mugglenet.com", function() { return new MuggleNetParser(); });
+parserFactory.register("fanfiction.mugglenet.com", () => new MuggleNetParser());
 
 class MuggleNetParser extends Parser {
     constructor() {

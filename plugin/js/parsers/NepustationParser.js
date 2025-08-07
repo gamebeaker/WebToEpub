@@ -3,7 +3,7 @@
 */
 "use strict";
 
-parserFactory.register("nepustation.com", function() { return new NepustationParser(); });
+parserFactory.register("nepustation.com", () => new NepustationParser());
 
 class CryptEngine {
     constructor() {

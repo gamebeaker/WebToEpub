@@ -5,7 +5,7 @@
 
 //dead url/ parser
 parserFactory.register("unlimitednovelfailures.mangamatters.com", 
-    function() { return new UnlimitedNovelFailuresParser(); }
+    () => new UnlimitedNovelFailuresParser()
 );
 
 class UnlimitedNovelFailuresParser extends Parser {
