@@ -34,11 +34,10 @@ class UltimaguilParser extends Parser {
     }
 
     webPageToEpubItems(webPage, epubItemIndex) {
-        let that = this;
-        let content = that.convertRawDomToContent(webPage);
+        let content = this.convertRawDomToContent(webPage);
         let items = [];
         if (content != null) {
-            items = that.splitContentIntoEpubItems(content, webPage.sourceUrl, epubItemIndex);
+            items = this.splitContentIntoEpubItems(content, webPage.sourceUrl, epubItemIndex);
         }
         return items;
     }

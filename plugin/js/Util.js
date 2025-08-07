@@ -66,8 +66,7 @@ const util = (function() {
     function createSvgImageElement(href, width, height, origin, includeImageSourceUrl) {
         let svg_ns = "http://www.w3.org/2000/svg";
         let xlink_ns = "http://www.w3.org/1999/xlink";
-        let that = this;
-        let doc = that.createEmptyXhtmlDoc();
+        let doc = createEmptyXhtmlDoc();
         let body = doc.getElementsByTagName("body")[0];
         let div = doc.createElementNS(XMLNS, "div");
         div.className = "svg_outer svg_inner";

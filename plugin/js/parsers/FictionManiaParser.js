@@ -40,8 +40,7 @@ class FictionManiaParser extends Parser {
     }
 
     extractTitleImpl(dom) {
-        let that = this;
-        return util.getElement(dom.body, "a", e => that.isChapterHref(e));
+        return util.getElement(dom.body, "a", e => this.isChapterHref(e));
     }
 
     extractAuthor(dom) {

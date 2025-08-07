@@ -23,12 +23,10 @@ class CryptEngine {
     }
 
     decryptString(cypherText) {
-        let that = this;
-        let decryptChar = function(c) {
-            let t = that.decryptTable.get(c);
+        return cypherText.split("").map(c => {
+            let t = this.decryptTable.get(c);
             return (t === undefined) ? c : t;
-        };
-        return cypherText.split("").map(c => decryptChar(c)).join("");
+        }).join("");
     }
 
 }

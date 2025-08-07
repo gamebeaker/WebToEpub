@@ -232,7 +232,7 @@ class Parser {
 
     makePlaceholderEpubItem(webPage, epubItemIndex) {
         let temp = Parser.makeEmptyDocForContent(webPage.sourceUrl);
-        temp.content.textContent = chrome.i18n.getMessage("chapterPlaceholderMessage", 
+        temp.content.textContent = chrome.i18n.getMessage("chapterPlaceholderMessage",
             [webPage.sourceUrl, webPage.error]
         );
         util.convertPreTagToPTags(temp.dom, temp.content);
@@ -313,46 +313,45 @@ class Parser {
     }
 
     getEpubMetaInfo(dom, useFullTitle) {
-        let that = this;
         let metaInfo = new EpubMetaInfo();
         metaInfo.uuid = dom.baseURI;
         try {
-            metaInfo.title = that.extractTitle(dom);
+            metaInfo.title = this.extractTitle(dom);
         }
         catch (err) {
             metaInfo.title = "";
         }
         try {
-            metaInfo.author = that.extractAuthor(dom).trim();
+            metaInfo.author = this.extractAuthor(dom).trim();
         }
         catch (err) {
             metaInfo.author = "";
         }
         try {
-            metaInfo.language = that.extractLanguage(dom);
+            metaInfo.language = this.extractLanguage(dom);
         }
         catch (err) {
             metaInfo.language = "";
         }
         try {
-            metaInfo.fileName = that.makeSaveAsFileNameWithoutExtension(metaInfo.title, useFullTitle);
+            metaInfo.fileName = this.makeSaveAsFileNameWithoutExtension(metaInfo.title, useFullTitle);
         }
         catch (err) {
             metaInfo.fileName = "web.epub";
         }
         try {
-            metaInfo.subject = that.extractSubject(dom);
+            metaInfo.subject = this.extractSubject(dom);
         }
         catch (err) {
             metaInfo.subject = "";
         }
         try {
-            metaInfo.description = that.extractDescription(dom);
+            metaInfo.description = this.extractDescription(dom);
         }
         catch (err) {
             metaInfo.description = "";
         }
-        that.extractSeriesInfo(dom, metaInfo);
+        this.extractSeriesInfo(dom, metaInfo);
         return metaInfo;
     }
 
@@ -446,30 +445,29 @@ class Parser {
 
     // called when plugin has obtained the first web page
     async onLoadFirstPage(url, firstPageDom) {
-        let that = this;
         this.state.firstPageDom = firstPageDom;
         this.state.chapterListUrl = url;
         let chapterUrlsUI = new ChapterUrlsUI(this);
         this.userPreferences.setReadingListCheckbox(url);
 
         // returns promise, because may need to fetch additional pages to find list of chapters
-        await that.getChapterUrls(firstPageDom, chapterUrlsUI).then(async function(chapters) {
-            if (that.userPreferences.chaptersPageInChapterList.value) {
-                chapters = that.addFirstPageUrlToWebPages(url, firstPageDom, chapters);
+        await this.getChapterUrls(firstPageDom, chapterUrlsUI).then(async (chapters) => {
+            if (this.userPreferences.chaptersPageInChapterList.value) {
+                chapters = this.addFirstPageUrlToWebPages(url, firstPageDom, chapters);
             }
-            chapters = that.cleanWebPageUrls(chapters);
-            await that.userPreferences.readingList.deselectOldChapters(url, chapters);
+            chapters = this.cleanWebPageUrls(chapters);
+            await this.userPreferences.readingList.deselectOldChapters(url, chapters);
             chapterUrlsUI.populateChapterUrlsTable(chapters);
             if (0 < chapters.length) {
                 if (chapters[0].sourceUrl === url) {
                     chapters[0].rawDom = firstPageDom;
-                    that.updateLoadState(chapters[0]);
+                    this.updateLoadState(chapters[0]);
                 }
                 ProgressBar.setValue(0);
             }
-            that.state.setPagesToFetch(chapters);
+            this.state.setPagesToFetch(chapters);
             chapterUrlsUI.connectButtonHandlers();
-        }).catch(function(err) {
+        }).catch((err) => {
             ErrorLog.showErrorMessage(err);
         });
     }
@@ -527,8 +525,6 @@ class Parser {
     }
 
     async fetchWebPages() {
-        let that = this;
-
         let pagesToFetch = [...this.state.webPages.values()].filter(c => c.isIncludeable);
         if (pagesToFetch.length === 0) {
             return Promise.reject(new Error("No chapters found."));
@@ -536,8 +532,8 @@ class Parser {
 
         this.setUiToShowLoadingProgress(pagesToFetch.length);
 
-        that.imageCollector.reset();
-        that.imageCollector.setCoverImageUrl(CoverImageUI.getCoverImageUrl());
+        this.imageCollector.reset();
+        this.imageCollector.setCoverImageUrl(CoverImageUI.getCoverImageUrl());
 
         await this.addParsersToPages(pagesToFetch);
         let index = 0;
@@ -568,12 +564,11 @@ class Parser {
     }
 
     async fetchWebPageContent(webPage) {
-        let that = this;
         ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_SLEEPING);
         await this.rateLimitDelay();
         ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_DOWNLOADING);
         let pageParser = webPage.parser;
-        return pageParser.fetchChapter(webPage.sourceUrl).then(function(webPageDom) {
+        return pageParser.fetchChapter(webPage.sourceUrl).then((webPageDom) => {
             delete webPage.error;
             webPage.rawDom = webPageDom;
             pageParser.preprocessRawDom(webPageDom);
@@ -584,8 +579,8 @@ class Parser {
                 throw new Error(errorMsg);
             }
             return pageParser.fetchImagesUsedInDocument(content, webPage);
-        }).catch(function(error) {
-            if (that.userPreferences.skipChaptersThatFailFetch.value) {
+        }).catch((error) => {
+            if (this.userPreferences.skipChaptersThatFailFetch.value) {
                 ErrorLog.log(error);
                 webPage.error = error;
             } else {
@@ -596,13 +591,12 @@ class Parser {
     }
 
     fetchImagesUsedInDocument(content, webPage) {
-        let that = this;
         return this.imageCollector.preprocessImageTags(content, webPage.sourceUrl)
-            .then(function(revisedContent) {
-                that.imageCollector.findImagesUsedInDocument(revisedContent);
-                return that.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
-            }).then(function() {
-                that.updateLoadState(webPage);
+            .then((revisedContent) => {
+                this.imageCollector.findImagesUsedInDocument(revisedContent);
+                return this.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
+            }).then(() => {
+                this.updateLoadState(webPage);
             });
     }
 
