@@ -64,7 +64,7 @@ class FetchErrorHandler {
             msg = new Error(new Error(this.makeFailCanRetryMessage(url, response.status)));
         }
         let cancelLabel = this.getCancelButtonText();
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             if (wrapOptions.retry.HTTP === 403) {
                 msg.openurl = response.url;
                 msg.blockurl = url;

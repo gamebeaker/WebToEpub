@@ -297,7 +297,7 @@ class ImageCollector {
     }
 
     getImageDimensions(imageInfo) {
-        return new Promise(function(resolve, reject) { // eslint-disable-line no-unused-vars
+        return new Promise((resolve, reject) => { // eslint-disable-line no-unused-vars
             let img = new Image();
             let options = {type: imageInfo.mediaType};
             let blob = new Blob([new Uint8Array(imageInfo.arraybuffer)], options);

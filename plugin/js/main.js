@@ -152,9 +152,9 @@ var main = (function() {
         main.getPackEpubButton().disabled = true;
         replaceLibAddToLibrary();
         parser.onStartCollecting();
-        await parser.fetchContent().then(function() {
+        await parser.fetchContent().then(() => {
             return packEpub(metaInfo);
-        }).then(function(content) {
+        }).then((content) => {
             // Enable button here.  If user cancels save dialog
             // the promise never returns
             window.workInProgress = false;
@@ -167,7 +167,7 @@ var main = (function() {
                 return library.LibAddToLibrary(content, fileName, document.getElementById("startingUrlInput").value, overwriteExisting, backgroundDownload);
             }
             return Download.save(content, fileName, overwriteExisting, backgroundDownload);
-        }).then(function() {
+        }).then(() => {
             parser.updateReadingList();
             if (util.sleepController.signal.aborted) {
                 util.sleepController = new AbortController;
@@ -179,7 +179,7 @@ var main = (function() {
                 ErrorLog.showLogToUser();
                 dumpErrorLogToFile();
             }
-        }).catch(function(err) {
+        }).catch((err) => {
             window.workInProgress = false;
             main.getPackEpubButton().disabled = false;
             if (util.sleepController.signal.aborted) {
@@ -338,7 +338,7 @@ var main = (function() {
 
     function openTabWindow() {
         // open new tab window, passing ID of open tab with content to convert to epub as query parameter.
-        getActiveTab().then(function(tabId) {
+        getActiveTab().then((tabId) => {
             let url = chrome.runtime.getURL("popup.html") + "?id=";
             url += tabId;
             try {
@@ -353,8 +353,8 @@ var main = (function() {
     }
 
     function getActiveTab() {
-        return new Promise(function(resolve, reject) {
-            chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
+        return new Promise((resolve, reject) => {
+            chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
                 if ((tabs != null) && (0 < tabs.length)) {
                     resolve(tabs[0].id);
                 } else {
@@ -368,10 +368,10 @@ var main = (function() {
         // load page via XmlHTTPRequest
         let url = getValueFromUiField("startingUrlInput");
         getLoadAndAnalyseButton().disabled = true;
-        return HttpClient.wrapFetch(url).then(async function(xhr) {
+        return HttpClient.wrapFetch(url).then(async (xhr) => {
             await populateControlsWithDom(url, xhr.responseXML);
             getLoadAndAnalyseButton().disabled = false;
-        }).catch(function(error) {
+        }).catch((error) => {
             getLoadAndAnalyseButton().disabled = false;
             ErrorLog.showErrorMessage(error);
         });
@@ -504,7 +504,7 @@ var main = (function() {
         [...sections.keys()].forEach(s => s.hidden = true);
 
         document.getElementById("readingListSection").hidden = false;
-        document.getElementById("closeReadingList").onclick = function() {
+        document.getElementById("closeReadingList").onclick = () => {
             [...sections].forEach(s => s[0].hidden = s[1]);
         };
 
@@ -532,8 +532,8 @@ var main = (function() {
         getManuallySelectParserTag().onchange = populateControls;
         document.getElementById("advancedOptionsButton").onclick = onAdvancedOptionsClick;
         document.getElementById("hiddenBibButton").onclick = onLibraryClick;
-        document.getElementById("ShowMoreMetadataOptionsCheckbox").addEventListener("change", function() {onShowMoreMetadataOptionsClick();});
-        document.getElementById("LibShowAdvancedOptionsCheckbox").addEventListener("change", function() {Library.LibRenderSavedEpubs();});
+        document.getElementById("ShowMoreMetadataOptionsCheckbox").addEventListener("change", () => onShowMoreMetadataOptionsClick());
+        document.getElementById("LibShowAdvancedOptionsCheckbox").addEventListener("change", () => Library.LibRenderSavedEpubs());
         document.getElementById("LibAddToLibrary").addEventListener("click", fetchContentAndPackEpub);
         document.getElementById("LibPauseToLibrary").addEventListener("click", pauseToLibrary);
         document.getElementById("stylesheetToDefaultButton").onclick = onStylesheetToDefaultClick;
@@ -569,9 +569,9 @@ var main = (function() {
     }
 	
     function autosearchnovelupdates(url, titlename) {
-        return HttpClient.wrapFetch(url).then(function(xhr) {
+        return HttpClient.wrapFetch(url).then((xhr) => {
             findnovelupdatesurl(url, xhr.responseXML, titlename);
-        }).catch(function(error) {
+        }).catch((error) => {
             getLoadAndAnalyseButton().disabled = false;
             ErrorLog.showErrorMessage(error);
         });
@@ -594,9 +594,9 @@ var main = (function() {
         getPackEpubButton().disabled = true;
         document.getElementById("LibAddToLibrary").disabled = true;
         let url = getValueFromUiField("metadataUrlInput");
-        return HttpClient.wrapFetch(url).then(function(xhr) {
+        return HttpClient.wrapFetch(url).then((xhr) => {
             populateMetadataAddWithDom(url, xhr.responseXML);
-        }).catch(function(error) {
+        }).catch((error) => {
             getLoadAndAnalyseButton().disabled = false;
             ErrorLog.showErrorMessage(error);
         });
@@ -621,7 +621,7 @@ var main = (function() {
     }
 
     // actions to do when window opened
-    window.onload = function() {
+    window.onload = () => {
         userPreferences = UserPreferences.readFromLocalStorage();
         if (isRunningInTabMode()) { 
             ErrorLog.SuppressErrorLog =  false;

@@ -168,9 +168,7 @@ const util = (function() {
     }
 
     function decodeEmail(encodedString) {
-        let extractHex = function(index) {
-            return parseInt(encodedString.slice(index, index + 2), 16);
-        };
+        let extractHex = (index) => parseInt(encodedString.slice(index, index + 2), 16);
         let key = extractHex(0);
         let email = "";
         for (let index = 2; index < encodedString.length; index += 2) {
@@ -297,10 +295,7 @@ const util = (function() {
     }
 
     function convertPreTagToPTags(dom, element, splitOn) {
-        let normalizeEol = function(s) {
-            return s.replace(/\r\n/g, "\n")
-                .replace(/\r/g, "\n");
-        };
+        let normalizeEol = (s) => s.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
         splitOn = splitOn || "\n";
         let strings = normalizeEol(element.innerText).split(splitOn);
@@ -936,12 +931,10 @@ const util = (function() {
     }
 
     function createChapterTab(url) {
-        return new Promise(function(resolve) {
-            chrome.tabs.create({url: url, active: false},
-                function(tab) {
-                    resolve(tab.id);
-                }
-            );
+        return new Promise((resolve) => {
+            chrome.tabs.create({url: url, active: false}, (tab) => {
+                resolve(tab.id);
+            });
         });
     }
 
