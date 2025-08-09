@@ -453,12 +453,12 @@ class Parser {
         this.userPreferences.setReadingListCheckbox(url);
 
         // returns promise, because may need to fetch additional pages to find list of chapters
-        await that.getChapterUrls(firstPageDom, chapterUrlsUI).then(function(chapters) {
+        await that.getChapterUrls(firstPageDom, chapterUrlsUI).then(async function(chapters) {
             if (that.userPreferences.chaptersPageInChapterList.value) {
                 chapters = that.addFirstPageUrlToWebPages(url, firstPageDom, chapters);
             }
             chapters = that.cleanWebPageUrls(chapters);
-            that.userPreferences.readingList.deselectOldChapters(url, chapters);
+            await that.userPreferences.readingList.deselectOldChapters(url, chapters);
             chapterUrlsUI.populateChapterUrlsTable(chapters);
             if (0 < chapters.length) {
                 if (chapters[0].sourceUrl === url) {

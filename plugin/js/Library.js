@@ -1097,4 +1097,27 @@ class Library {
             DivObjectInject.appendChild(tag);
         }
     }
+
+    static async LibGetSourceChapterList(url) {
+        let LibArray = await Library.LibGetStorageIDs();
+        for (let i = 0; i < LibArray.length; i++) {
+            LibArray[i] = [LibArray[i], await Library.LibGetFromStorage("LibStoryURL"+LibArray[i])];
+        }       
+        LibArray = await LibArray.filter(a => a[1] == url);
+        if (LibArray == null) {
+            return null;
+        }
+        
+        let EpubBase64 = await Library.LibGetFromStorage("LibEpub" + LibArray[0][0]);
+        let EpubReader = await new zip.Data64URIReader(EpubBase64);
+        let EpubZip = new zip.ZipReader(EpubReader, {useWebWorkers: false});
+        let EpubContent = await EpubZip.getEntries();
+        EpubContent = EpubContent.filter(a => a.directory == false);
+        let contentopftext = await EpubContent.filter( a => a.filename == "OEBPS/content.opf")[0].getData(new zip.TextWriter());
+        let contentopf = new DOMParser().parseFromString(contentopftext, "text/html");
+        let regex = new RegExp(/^xhtml[0-9]+/g);
+        let chapters = [...contentopf.querySelectorAll("item")].filter(a => (a.id.match(regex) != null));
+        let chaptersource = [...chapters.map(a => contentopf.getElementById("id." + a.id).innerText)];
+        return chaptersource;
+    }
 }

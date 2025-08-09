@@ -35,16 +35,35 @@ class ReadingList {
         return this.epubs.get(url);
     }
 
-    deselectOldChapters(url, chapterList) {
+    async deselectOldChapters(url, chapterList) {
         let oldUrl = this.epubs.get(url);
         if (oldUrl != null) {
+            let foundLastURL = false;
             for (let i = 0; i < chapterList.length; ++i) {
                 if (oldUrl === chapterList[i].sourceUrl) {
+                    foundLastURL = true;
                     for (let j = 0; j <= i; ++j) {
                         chapterList[j].isIncludeable = false;
                         chapterList[j].previousDownload = true;
                     }
                     break;
+                }
+            }
+            if (!foundLastURL) {
+                let SourceChapterList = await Library.LibGetSourceChapterList(url);
+                if (SourceChapterList == null) {
+                    return;
+                }
+                for (let i = chapterList.length-1; i >= 0; --i) {
+                    for (let j = SourceChapterList.length-1; j >= 0; --j) {
+                        if (SourceChapterList[j] === chapterList[i].sourceUrl) {
+                            for (let z = 0; z <= i; ++z) {
+                                chapterList[z].isIncludeable = false;
+                                chapterList[z].previousDownload = true;
+                            }
+                            return;
+                        }
+                    }
                 }
             }
         }
