@@ -15,9 +15,7 @@ class Library {
     
     async LibAddToLibrary(AddEpub, fileName, startingUrlInput, overwriteExisting, backgroundDownload) {
         Library.LibShowLoadingText();
-        if (document.getElementById("includeInReadingListCheckbox").checked != true) {
-            document.getElementById("includeInReadingListCheckbox").click();
-        }
+        Library.userPreferences.readingList.addEpub(document.getElementById("startingUrlInput").value);
         let CurrentLibStoryURLKeys = await Library.LibGetAllLibStorageKeys("LibStoryURL");
         let CurrentLibStoryURLs = await Library.LibGetFromStorageArray(CurrentLibStoryURLKeys);
         let LibidURL = -1;
@@ -809,9 +807,6 @@ class Library {
         obj.dataset.libclick = "yes";
         document.getElementById("startingUrlInput").value = await Library.LibGetFromStorage(LibGetURL);
         await main.onLoadAndAnalyseButtonClick.call(obj);
-        if (document.getElementById("includeInReadingListCheckbox").checked != true) {
-            document.getElementById("includeInReadingListCheckbox").click();
-        }
         try {
             await main.fetchContentAndPackEpub.call(obj);
         } catch {
@@ -828,9 +823,6 @@ class Library {
             //document.getElementById("libinvisbutton").click();
             // load page via XmlHTTPRequest
             main.onLoadAndAnalyseButtonClick().then(function() {
-                if (document.getElementById("includeInReadingListCheckbox").checked != true) {
-                    document.getElementById("includeInReadingListCheckbox").click();
-                }
             },function(e) {
                 ErrorLog.showErrorMessage(e);
             });
@@ -900,9 +892,6 @@ class Library {
             obj.dataset.libsuppressErrorLog = true;
             document.getElementById("startingUrlInput").value = links[i];
             await main.onLoadAndAnalyseButtonClick.call(obj);
-            if (document.getElementById("includeInReadingListCheckbox").checked != true) {
-                document.getElementById("includeInReadingListCheckbox").click();
-            }
             try {
                 await main.fetchContentAndPackEpub.call(obj);
             } catch {
