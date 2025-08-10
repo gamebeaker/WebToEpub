@@ -160,8 +160,11 @@ class EpubPacker {
     appendMetaContent(parent, opf_ns, name, content) {
         let that = this;
         let meta = that.createAndAppendChildNS(parent, opf_ns, "meta");
-        meta.setAttributeNS(null, "content", content);
+        // Some e-book readers such as the Nook fail to recognize covers if the content
+        // attribute comes before the name attribute. For maximum compatibility move
+        // the name attribute before the content attribute.
         meta.setAttributeNS(null, "name", name);
+        meta.setAttributeNS(null, "content", content);
     }
     
     buildManifest(opf, ns, epubItemSupplier) {
@@ -274,17 +277,10 @@ class EpubPacker {
 
     populateHead(head, ns, depth) {
         let that = this;
-        that.buildHeadMeta(head, ns, that.metaInfo.uuid, "dtb:uid");
-        that.buildHeadMeta(head, ns, (depth < 2) ? "2" : depth, "dtb:depth");
-        that.buildHeadMeta(head, ns, "0", "dtb:totalPageCount");
-        that.buildHeadMeta(head, ns, "0", "dtb:maxPageNumber");
-    }
-
-    buildHeadMeta(head, ns, content, name) {
-        let that = this;
-        let meta = that.createAndAppendChildNS(head, ns, "meta");
-        meta.setAttributeNS(null, "content", content);
-        meta.setAttributeNS(null, "name", name);
+        that.appendMetaContent(head, ns, "dtb:uid", that.metaInfo.uuid);
+        that.appendMetaContent(head, ns, "dtb:depth", (depth < 2) ? "2" : depth);
+        that.appendMetaContent(head, ns, "dtb:totalPageCount", "0");
+        that.appendMetaContent(head, ns, "dtb:maxPageNumber", "0");
     }
 
     buildDocTitle(ncx, ns) {
