@@ -1093,7 +1093,7 @@ class Library {
             LibArray[i] = [LibArray[i], await Library.LibGetFromStorage("LibStoryURL"+LibArray[i])];
         }       
         LibArray = await LibArray.filter(a => a[1] == url);
-        if (LibArray == null) {
+        if (0 == LibArray.length) {
             return null;
         }
         
