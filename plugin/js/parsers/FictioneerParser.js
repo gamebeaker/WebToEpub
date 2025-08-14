@@ -8,7 +8,7 @@ parserFactory.register("igniforge.com", () => new FictioneerParser());
 parserFactory.register("razentl.com", () => new FictioneerParser());
 //these still exist
 parserFactory.register("emberlib731.xyz", () => new FictioneerParser());
-parserFactory.register("lilyonthevalley.com", () => new LilyOnTheValleyParser());
+parserFactory.register("lilyonthevalley.com", () => new FictioneerParser());
 parserFactory.register("novelib.com", () => new FictioneerParser());
 parserFactory.register("smeraldogarden.com", () => new FictioneerParser());
 parserFactory.register("springofromance.com", () => new FictioneerParser());
@@ -33,13 +33,13 @@ class FictioneerParser extends Parser {
         // Put free chapters first
         [...dom.querySelectorAll(".chapter-group__list ._publish a")].map(a => chapters.push(({
             sourceUrl: a.href,
-            title: a.textContent?.trim(),
+            title: a.textContent,
             isIncludeable: true
         })));
         // Put scheduled chapters after free and don't select them
         [...dom.querySelectorAll("._future a")].map(a => chapters.push(({
             sourceUrl: a.href,
-            title: a.textContent?.trim(),
+            title: a.textContent,
             isIncludeable: false
         })));
 
@@ -119,29 +119,5 @@ class FictioneerParser extends Parser {
 
     getInformationEpubItemChildNodes(dom) {
         return [...dom.querySelectorAll(".story__header, .story__summary")];
-    }
-}
-
-class LilyOnTheValleyParser extends FictioneerParser {
-    constructor() {
-        super();
-    }
-
-    customRawDomToContentStep(chapter, content) {
-        content.querySelectorAll("*").forEach(element => {
-            // if it's a p tag and does not have attribute data-paragraph-id, remove it
-            if (element.tagName === "P" && !element.hasAttribute("data-paragraph-id")) {
-                element.remove();
-            }
-
-            // if it's a span, and it's content is only hexadecimal: `<span class="[^"]*">[a-f0-9]+</span>`
-            if (element.tagName === "SPAN"
-                && element.classList?.length === 1
-                && /^[a-f0-9]+$/.test(element.textContent)) {
-                element.remove();
-            }
-        });
-
-        super.customRawDomToContentStep(chapter, content);
     }
 }
