@@ -280,6 +280,7 @@ class HttpClient {
             }));
         } catch {
             // Probably running browser that doesn't support partitionKey, e.g. Kiwi
+            console.log("failed to set cookie");
         } 
     }
 }
