@@ -456,6 +456,7 @@ class Parser {
                 chapters = this.addFirstPageUrlToWebPages(url, firstPageDom, chapters);
             }
             chapters = this.cleanWebPageUrls(chapters);
+            chapters?.forEach(chapter => chapter.title = chapter.title?.trim());
             await this.userPreferences.readingList.deselectOldChapters(url, chapters);
             chapterUrlsUI.populateChapterUrlsTable(chapters);
             if (0 < chapters.length) {

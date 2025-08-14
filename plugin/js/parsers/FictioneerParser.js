@@ -10,6 +10,7 @@ parserFactory.register("razentl.com", () => new FictioneerParser());
 parserFactory.register("emberlib731.xyz", () => new FictioneerParser());
 parserFactory.register("lilyonthevalley.com", () => new FictioneerParser());
 parserFactory.register("novelib.com", () => new FictioneerParser());
+parserFactory.register("smeraldogarden.com", () => new FictioneerParser());
 parserFactory.register("springofromance.com", () => new FictioneerParser());
 
 parserFactory.registerRule(
@@ -30,7 +31,7 @@ class FictioneerParser extends Parser {
     async getChapterUrls(dom) {
         let chapters = [];
         // Put free chapters first
-        [...dom.querySelectorAll("._publish a")].map(a => chapters.push(({
+        [...dom.querySelectorAll(".chapter-group__list ._publish a")].map(a => chapters.push(({
             sourceUrl: a.href,
             title: a.textContent,
             isIncludeable: true
@@ -112,7 +113,7 @@ class FictioneerParser extends Parser {
     }
 
     removeUnwantedElementsFromContentElement(element) {
-        util.removeElements(element.querySelectorAll("iframe, .eoc-chapter-groups, .chapter-nav"));
+        util.removeElements(element.querySelectorAll("iframe, .eoc-chapter-groups, .chapter-nav, .related-stories-block"));
         super.removeUnwantedElementsFromContentElement(element);
     }
 
