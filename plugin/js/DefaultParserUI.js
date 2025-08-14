@@ -69,7 +69,7 @@ class DefaultParserSiteSettings {
             }
             if (!util.isNullOrEmpty(config.removeCss))
             {
-                logic.removeUnwanted = function(element) {
+                logic.removeUnwanted = (element) => {
                     for (let e of element.querySelectorAll(config.removeCss)) {
                         e.remove();
                     }
@@ -128,7 +128,7 @@ class DefaultParserUI { // eslint-disable-line no-unused-vars
 
     static setDefaultParserUiVisibility(isVisible) {
         // toggle mode
-        ChapterUrlsUI.setVisibileUI(!isVisible);
+        ChapterUrlsUI.setVisibleUI(!isVisible);
         if (isVisible) {
             ChapterUrlsUI.getEditChaptersUrlsInput().hidden = true;
             ChapterUrlsUI.modifyApplyChangesButtons(button => button.hidden = true);
@@ -146,7 +146,7 @@ class DefaultParserUI { // eslint-disable-line no-unused-vars
             alert(chrome.i18n.getMessage("warningNoChapterUrl"));
             return;
         }
-        return HttpClient.wrapFetch(config.testUrl).then(function(xhr) {
+        return HttpClient.wrapFetch(config.testUrl).then((xhr) => {
             let webPage = { rawDom: util.sanitize(xhr.responseXML.querySelector("*")) };
             util.setBaseTag(config.testUrl, webPage.rawDom);
             let content = parser.findContent(webPage.rawDom);
@@ -157,7 +157,7 @@ class DefaultParserUI { // eslint-disable-line no-unused-vars
             parser.removeUnwantedElementsFromContentElement(content);
             parser.addTitleToContent(webPage, content);
             DefaultParserUI.showResult(content);
-        }).catch(function(err) {
+        }).catch((err) => {
             ErrorLog.showErrorMessage(err);
         });
     }
