@@ -71,7 +71,7 @@ class KemonopartyParser extends Parser {
             urlbuilder.searchParams.set(key, value);
         }
         urlbuilder.searchParams.set("o", 0);
-        let lastPageOffset = 0
+        let lastPageOffset = 0;
         
         try {
             lastPageOffset = this.getLastPageOffset(dom);
