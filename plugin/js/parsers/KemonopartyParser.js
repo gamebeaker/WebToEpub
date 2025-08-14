@@ -26,6 +26,9 @@ class KemonopartyParser extends Parser {
             let partialList = this.extractPartialChapterList(json, baseUrl);
             chapterUrlsUI.showTocProgress(partialList);
             chapters = chapters.concat(partialList);
+            if (partialList.length == 0) {
+                break;
+            }
         }
         return chapters.reverse();
     }
@@ -68,8 +71,15 @@ class KemonopartyParser extends Parser {
             urlbuilder.searchParams.set(key, value);
         }
         urlbuilder.searchParams.set("o", 0);
-
-        let lastPageOffset = this.getLastPageOffset(dom);
+        let lastPageOffset = 0
+        
+        try {
+            lastPageOffset = this.getLastPageOffset(dom);
+        } catch (error) {
+            let regex1 = new RegExp("/posts?.+");
+            let profile = (await HttpClient.fetchJson(urlbuilder.href.replace(regex1, "/profile"))).json;
+            lastPageOffset = profile?.post_count;
+        }
         let urls = [];
         for (let i = 0; i <= lastPageOffset; i += 50) {
             urlbuilder.searchParams.set("o", i);
@@ -80,7 +90,7 @@ class KemonopartyParser extends Parser {
 
     getLastPageOffset(dom) {
         let link = [...dom.querySelectorAll("#paginator-top a")].pop();
-        let offset = new URL(link.href)?.searchParams?.get("o");
+        let offset = new URL(link?.href)?.searchParams?.get("o");
         return offset
             ? parseInt(offset)
             : 0;
