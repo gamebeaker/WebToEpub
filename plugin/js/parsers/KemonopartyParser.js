@@ -41,7 +41,12 @@ class KemonopartyParser extends Parser {
     async fetchChapter(url) {
         let jsonUrl = new URL(url);
         jsonUrl.pathname = "/api/v1" + jsonUrl.pathname;
-        let json = (await HttpClient.fetchJson(jsonUrl.href)).json;
+        let options = {
+            headers: {
+                "Accept": "text/css"
+            }
+        };
+        let json = (await HttpClient.fetchJson(jsonUrl.href, options)).json;
         return this.buildChapter(json, url);
     }
 
@@ -82,7 +87,12 @@ class KemonopartyParser extends Parser {
             lastPageOffset = this.getLastPageOffset(dom);
         } catch (error) {
             let regex1 = new RegExp("/posts?.+");
-            let profile = (await HttpClient.fetchJson(urlbuilder.href.replace(regex1, "/profile"))).json;
+            let options = {
+                headers: {
+                    "Accept": "text/css"
+                }
+            };
+            let profile = (await HttpClient.fetchJson(urlbuilder.href.replace(regex1, "/profile"), options)).json;
             lastPageOffset = profile?.post_count;
         }
         let urls = [];
