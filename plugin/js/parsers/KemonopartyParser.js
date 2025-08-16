@@ -22,7 +22,12 @@ class KemonopartyParser extends Parser {
         baseUrl.searchParams.delete("tag");
         for (let url of urlsOfTocPages) {
             await this.rateLimitDelay();
-            let json = (await HttpClient.fetchJson(url)).json;
+            let options = {
+                headers: {
+                    "Accept": "text/css"
+                }
+            };
+            let json = (await HttpClient.fetchJson(url, options)).json;
             let partialList = this.extractPartialChapterList(json, baseUrl);
             chapterUrlsUI.showTocProgress(partialList);
             chapters = chapters.concat(partialList);
