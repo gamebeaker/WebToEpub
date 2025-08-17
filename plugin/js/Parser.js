@@ -450,8 +450,8 @@ class Parser {
         let chapterUrlsUI = new ChapterUrlsUI(this);
         this.userPreferences.setReadingListCheckbox(url);
 
-        // returns promise, because may need to fetch additional pages to find list of chapters
-        await this.getChapterUrls(firstPageDom, chapterUrlsUI).then(async (chapters) => {
+        try {
+            let chapters = await this.getChapterUrls(firstPageDom, chapterUrlsUI);
             if (this.userPreferences.chaptersPageInChapterList.value) {
                 chapters = this.addFirstPageUrlToWebPages(url, firstPageDom, chapters);
             }
@@ -468,9 +468,9 @@ class Parser {
             }
             this.state.setPagesToFetch(chapters);
             chapterUrlsUI.connectButtonHandlers();
-        }).catch((err) => {
+        } catch (err) {
             ErrorLog.showErrorMessage(err);
-        });
+        }
     }
 
     cleanWebPageUrls(webPages) {
@@ -569,7 +569,8 @@ class Parser {
         await this.rateLimitDelay();
         ChapterUrlsUI.showDownloadState(webPage.row, ChapterUrlsUI.DOWNLOAD_STATE_DOWNLOADING);
         let pageParser = webPage.parser;
-        return pageParser.fetchChapter(webPage.sourceUrl).then((webPageDom) => {
+        try {
+            let webPageDom = await pageParser.fetchChapter(webPage.sourceUrl);
             delete webPage.error;
             webPage.rawDom = webPageDom;
             pageParser.preprocessRawDom(webPageDom);
@@ -580,7 +581,7 @@ class Parser {
                 throw new Error(errorMsg);
             }
             return pageParser.fetchImagesUsedInDocument(content, webPage);
-        }).catch((error) => {
+        } catch (error) {
             if (this.userPreferences.skipChaptersThatFailFetch.value) {
                 ErrorLog.log(error);
                 webPage.error = error;
@@ -588,17 +589,14 @@ class Parser {
                 webPage.isIncludeable = false;
                 throw error;
             }
-        }); 
+        }
     }
 
-    fetchImagesUsedInDocument(content, webPage) {
-        return this.imageCollector.preprocessImageTags(content, webPage.sourceUrl)
-            .then((revisedContent) => {
-                this.imageCollector.findImagesUsedInDocument(revisedContent);
-                return this.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
-            }).then(() => {
-                this.updateLoadState(webPage);
-            });
+    async fetchImagesUsedInDocument(content, webPage) {
+        let revisedContent = await this.imageCollector.preprocessImageTags(content, webPage.sourceUrl);
+        this.imageCollector.findImagesUsedInDocument(revisedContent);
+        await this.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
+        this.updateLoadState(webPage);
     }
 
     /**
