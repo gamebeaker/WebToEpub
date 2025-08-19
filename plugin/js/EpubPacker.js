@@ -136,8 +136,11 @@ class EpubPacker {
         }
 
         for (let i of epubItemSupplier.manifestItems()) {
-            let source = this.createAndAppendChildNS(metadata, dc_ns, "dc:source", i.sourceUrl);
-            source.setAttributeNS(null, "id", "id." + i.getId());
+            let sourceUrl = util.clearIfDataUri(i.sourceUrl);
+            if (sourceUrl) {  // Only add dc:source if we have a valid URL
+                let source = this.createAndAppendChildNS(metadata, dc_ns, "dc:source", sourceUrl);
+                source.setAttributeNS(null, "id", "id." + i.getId());
+            }
         }
     }
 
