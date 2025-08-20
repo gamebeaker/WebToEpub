@@ -20,14 +20,33 @@ class HelheimscansParser extends Parser {
 
     linkToChapter(link) {
         let title = link.querySelector("span").textContent.trim();
+        let coinimg = link.querySelector("img");
         return ({
             sourceUrl:  link.href,
-            title: title
+            title: title,
+            isIncludeable: (coinimg == null)
         });
     }
 
     findContent(dom) {
-        return dom.querySelector("#pages div.novel-reader");
+        return dom.querySelector("#pages");
+    }
+
+    preprocessRawDom(dom) {
+        let realURL = "";
+        let imgs = [...dom.querySelectorAll("#pages img")];
+        if (imgs.length != 0) {
+            try {
+                let script = dom.querySelector("#pages script");
+                realURL = script.textContent.match("realUrl = .*?;")[0];
+                realURL = realURL.replace("realUrl = `","").replace("${uid}`;","");
+            } catch (error) {
+                realURL = "https://image.meowing.org/uploads/";
+            }       
+        }
+        for (let img of imgs) {
+            img.src = realURL+img?.attributes?.uid?.textContent;
+        }
     }
 
     extractTitleImpl(dom) {
