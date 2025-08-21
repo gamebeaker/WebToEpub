@@ -125,7 +125,7 @@ class Parser {
         util.removeEmptyDivElements(content);
         util.removeTrailingWhiteSpace(content);
         if (util.isElementWhiteSpace(content)) {
-            let errorMsg = chrome.i18n.getMessage("warningNoVisibleContent", [webPage.sourceUrl]);
+            let errorMsg = UIText.Warning.warningNoVisibleContent(webPage.sourceUrl);
             ErrorLog.showErrorMessage(errorMsg);
         }
         return content;
@@ -232,9 +232,7 @@ class Parser {
 
     makePlaceholderEpubItem(webPage, epubItemIndex) {
         let temp = Parser.makeEmptyDocForContent(webPage.sourceUrl);
-        temp.content.textContent = chrome.i18n.getMessage("chapterPlaceholderMessage",
-            [webPage.sourceUrl, webPage.error]
-        );
+        temp.content.textContent = UIText.Default.chapterPlaceholderMessage(webPage.sourceUrl, webPage.error);
         util.convertPreTagToPTags(temp.dom, temp.content);
         return [new ChapterEpubItem(webPage, temp.content, epubItemIndex)];
     }
@@ -404,13 +402,13 @@ class Parser {
     }
 
     makeInformationEpubItem(dom) {
-        let titleText = chrome.i18n.getMessage("informationPageTitle");
+        let titleText = UIText.Default.informationPageTitle;
         let title = document.createElement("h1");
         title.appendChild(document.createTextNode(titleText));
         let div = document.createElement("div");
         let urlElement = document.createElement("p");
         let bold = document.createElement("b");
-        bold.textContent = chrome.i18n.getMessage("tableOfContentsUrl");
+        bold.textContent = UIText.Default.tableOfContentsUrl;
         urlElement.appendChild(bold);
         urlElement.appendChild(document.createTextNode(this.state.chapterListUrl));
         div.appendChild(urlElement);
@@ -509,7 +507,7 @@ class Parser {
 
     onFetchChaptersClicked() {
         if (0 == this.state.webPages.size) {
-            ErrorLog.showErrorMessage(chrome.i18n.getMessage("noChaptersFoundAndFetchClicked"));
+            ErrorLog.showErrorMessage(UIText.Error.noChaptersFoundAndFetchClicked);
         } else {
             this.fetchWebPages();
         }
@@ -577,7 +575,7 @@ class Parser {
             pageParser.removeUnusedElementsToReduceMemoryConsumption(webPageDom);
             let content = pageParser.findContent(webPage.rawDom);
             if (content == null) {
-                let errorMsg = chrome.i18n.getMessage("errorContentNotFound", [webPage.sourceUrl]);
+                let errorMsg = UIText.Error.errorContentNotFound(webPage.sourceUrl);
                 throw new Error(errorMsg);
             }
             return pageParser.fetchImagesUsedInDocument(content, webPage);
