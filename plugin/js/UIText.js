@@ -111,8 +111,9 @@ class UIText { // eslint-disable-line no-unused-vars
 
     // Utility method for localizing UI elements
     static localizeElement(element) {
-        let localized = chrome.i18n.getMessage(element.textContent.trim());
-        if (localized && localized !== element.textContent.trim()) {
+        let key = element.textContent.trim();
+        let localized = chrome.i18n.getMessage(key);
+        if (!util.isNullOrEmpty(localized) && localized !== key) {
             element.textContent = localized;
         }
     }
