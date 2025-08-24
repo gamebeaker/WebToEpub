@@ -189,8 +189,11 @@ class EpubPacker {
         let item = this.createAndAppendChildNS(manifest, ns, "item");
         let relativeHref = this.makeRelative(href);
         if (mediaType === "image/webp") {
-            let errorMsg = UIText.Warning.warningWebpImage(relativeHref);
-            ErrorLog.log(errorMsg);
+            let userPreferences = main.getUserPreferences();
+            if (!userPreferences?.disableWebpImageFormatError?.value) {
+                let errorMsg = UIText.Warning.warningWebpImage(relativeHref);
+                ErrorLog.log(errorMsg);
+            }
         }
         item.setAttributeNS(null, "href", relativeHref);
         item.setAttributeNS(null, "id", id);
