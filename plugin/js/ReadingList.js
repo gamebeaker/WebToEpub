@@ -157,7 +157,7 @@ class ReadingList {
             link.textContent = e;
             this.appendColumnToRow(row, link);
             let button = document.createElement("button");
-            button.textContent = chrome.i18n.getMessage("__MSG_button_Remove__");
+            button.textContent = UIText.Common.remove;
             this.appendColumnToRow(row, button);
         }
     }

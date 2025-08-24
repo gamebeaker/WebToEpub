@@ -418,7 +418,7 @@ class ImageCollector {
                     return this.findImageFileUrlUsingDataOrigFileUrl(imageInfo);
                 }
                 let baseUri = xhr.responseXML.baseURI;
-                let errorMsg = chrome.i18n.getMessage("gotHtmlExpectedImageWarning", [baseUri]);
+                let errorMsg = UIText.Error.gotHtmlExpectedImageWarning(baseUri);
                 ErrorLog.log(errorMsg);
                 temp = imageInfo.sourceUrl;
             }

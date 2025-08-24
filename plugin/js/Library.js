@@ -39,9 +39,7 @@ class Library { // eslint-disable-line no-unused-vars
         if (document.getElementById("LibDownloadEpubAfterUpdateCheckbox").checked) {
             fileName = EpubPacker.addExtensionIfMissing(await Library.LibGetFromStorage("LibFilename" + LibidURL));
             if (Download.isFileNameIllegalOnWindows(fileName)) {
-                ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorIllegalFileName",
-                    [fileName, Download.illegalWindowsFileNameChars]
-                ));
+                ErrorLog.showErrorMessage(UIText.Error.errorIllegalFileName(fileName, Download.illegalWindowsFileNameChars));
                 return;
             }
             return Download.save(MergedEpub, fileName, overwriteExisting, backgroundDownload);
@@ -627,7 +625,7 @@ class Library { // eslint-disable-line no-unused-vars
             
             let regex1 = opfFile.match(new RegExp("<dc:title>.+?</dc:creator>", "gs"));
             if ( regex1 == null) {
-                ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorEditMetadata"));
+                ErrorLog.showErrorMessage(UIText.Error.errorEditMetadata);
                 return;
             }
             let LibSaveMetadataString = "";
@@ -644,7 +642,7 @@ class Library { // eslint-disable-line no-unused-vars
             let content = await EpubZipWrite.close();
             Library.LibHandleUpdate(-1, content, await Library.LibGetFromStorage("LibStoryURL"+obj.dataset.libepubid), await Library.LibGetFromStorage("LibFilename"+obj.dataset.libepubid), obj.dataset.libepubid);
         } catch {
-            ErrorLog.showErrorMessage(chrome.i18n.getMessage("errorEditMetadata"));
+            ErrorLog.showErrorMessage(UIText.Error.errorEditMetadata);
             return;
         }
     }
