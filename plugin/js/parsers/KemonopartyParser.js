@@ -82,10 +82,12 @@ class KemonopartyParser extends Parser {
 
     async getLastPageOffset(dom, urlbuilder) {
         try {
-            let link = [...dom.querySelectorAll("#paginator-top a")].pop();
-            let offset = new URL(link?.href)?.searchParams?.get("o");
-            return offset
-                ? parseInt(offset)
+            let offsets = [...dom.querySelectorAll("#paginator-top a")]
+                .map(item => new URL(item?.href)?.searchParams?.get("o"))
+                .filter(item => item !== null)
+                .map(item => parseInt(item));
+            return 0 < offsets.length
+                ? Math.max(...offsets)
                 : 0;
         } catch (error) {
             let regex1 = new RegExp("/posts?.+");
