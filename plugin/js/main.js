@@ -634,7 +634,8 @@ var main = (function() {
         getPackEpubButton: getPackEpubButton,
         onLoadAndAnalyseButtonClick : onLoadAndAnalyseButtonClick,
         fetchContentAndPackEpub: fetchContentAndPackEpub,
-        resetUI: resetUI
+        resetUI: resetUI,
+        getUserPreferences: () => userPreferences,
     };
 })();
 

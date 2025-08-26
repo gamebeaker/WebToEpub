@@ -491,6 +491,18 @@
 		"message": "Don't popup 'SaveAs' dialog when save Epub",
 		"description": "Label for checkbox to download the final epub without a popup"
 	},
+    "__MSG_label_Disable_Shift_Click_Alert__": {
+      "message": "Disable Shift+Click Selection Alert",
+      "description": "Label for checkbox to disable the alert shown when user shift-clicks to select multiple chapters"
+    },
+    "__MSG_label_Disable_Image_Res_Error__": {
+      "message": "Disable High Resolution Image Fetch Failure Warning",
+      "description": "Label for checkbox to disable warnings when high resolution image fetch fails and lower resolution is used instead"
+    },
+    "__MSG_label_Disable_Webp_Image_Format_Error__": {
+      "message": "Disable WebP Image Format Compatibility Warning",
+      "description": "Label for checkbox to disable warnings that WebP format images may not render in epub viewers"
+    },
 	"__MSG_label_Write_Error_History_To_File__": {
 		"message": "Write error messages to file",
 		"description": "Label for checkbox to write recent error messages to file"
