@@ -332,3 +332,19 @@ class FontInfo extends ImageInfo {
             new zip.BlobReader(new Blob([this.arraybuffer])));
     }
 }
+
+/*
+class FontInfo extends EpubItem {
+    constructor(sourceUrl, fontName) {
+        super(sourceUrl);
+        this.fontName = fontName;
+        this.queuedForFetch = false;
+        this.mediaType = "application/font-woff2";
+    }
+
+    packInEpub(zipWriter) {
+        zipWriter.add("OEBPS/Fonts/"+this.fontName,
+            new zip.BlobReader(new Blob([this.arraybuffer])));
+    }
+}
+*/

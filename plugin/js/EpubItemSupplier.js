@@ -12,6 +12,7 @@ class EpubItemSupplier { // eslint-disable-line no-unused-vars
         this.coverImageInfo = imageCollector.coverImageInfo;
         this.imageCollector = imageCollector;
         imageCollector.imagesToPackInEpub().forEach(image => this.epubItems.push(image));
+        this.fontCollector = parser.fontCollector;
         epubItems.forEach(item => this.epubItems.push(item));
         this.coverImageId = () => this.coverImageInfo.getId();
     }

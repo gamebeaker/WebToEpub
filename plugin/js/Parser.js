@@ -57,12 +57,14 @@ class Parser {
         this.maxSimultanousFetchSize = 1;
         this.state = new ParserState();
         this.imageCollector = imageCollector || new ImageCollector();
+        this.fontCollector = new FontCollector();
         this.userPreferences = null;
     }
 
     copyState(otherParser) {
         this.state = otherParser.state;
         this.imageCollector.copyState(otherParser.imageCollector);
+        this.fontCollector.copyState(otherParser.fontCollector);
         this.userPreferences = otherParser.userPreferences;
     }
 
@@ -72,6 +74,11 @@ class Parser {
 
     getPagesToFetch() {
         return this.state.webPages;
+    }
+
+    // async is more future proof in case other fetch calls need to be made
+    async getFontsToFetch(rawDom, epubDom){
+        return [];
     }
     
     //Use this option if the parser isn't sending the correct HTTP header
@@ -98,6 +105,7 @@ class Parser {
     onUserPreferencesUpdate(userPreferences) {
         this.userPreferences = userPreferences;
         this.imageCollector.onUserPreferencesUpdate(userPreferences);
+        this.fontCollector.onUserPreferencesUpdate(userPreferences);
     }
 
     isWebPagePackable(webPage) {
@@ -532,6 +540,7 @@ class Parser {
         this.setUiToShowLoadingProgress(pagesToFetch.length);
 
         this.imageCollector.reset();
+        this.fontCollector.reset();
         this.imageCollector.setCoverImageUrl(CoverImageUI.getCoverImageUrl());
 
         await this.addParsersToPages(pagesToFetch);
@@ -578,6 +587,7 @@ class Parser {
                 let errorMsg = UIText.Error.errorContentNotFound(webPage.sourceUrl);
                 throw new Error(errorMsg);
             }
+            //await pageParser.fetchFontsUsedInDocument(pageParser, content, webPage);
             return pageParser.fetchImagesUsedInDocument(content, webPage);
         } catch (error) {
             if (this.userPreferences.skipChaptersThatFailFetch.value) {
@@ -588,6 +598,20 @@ class Parser {
                 throw error;
             }
         }
+    }
+
+    async fetchFontsUsedInDocument(pageParser, content, webPage) {
+        await pageParser.getFontsToFetch(webPage.rawDom, content);
+
+        let revisedContent = await this.imageCollector.preprocessImageTags(content, webPage.sourceUrl);
+        this.imageCollector.findImagesUsedInDocument(revisedContent);
+        await this.imageCollector.fetchImages(() => { }, webPage.sourceUrl);
+        this.updateLoadState(webPage);
+    }
+
+    // There is the possiblility that referer etc needs to be set.
+    async fetchFont(url) {
+        return (await HttpClient.wrapFetch(url));
     }
 
     async fetchImagesUsedInDocument(content, webPage) {
